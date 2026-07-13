@@ -14,7 +14,7 @@ The application is structured as a decoupled full-stack machine learning pipelin
 
 ## Feature Engineering & Heuristics
 
-Raw assembly strings are dynamically parsed into dimensional feature vectors in $O(1)$ constant time:
+Raw assembly strings are dynamically parsed into dimensional feature vectors in **O(1)** constant time:
 * `Opcode_Encoded`: Base algorithmic categorization.
 * `Category_Encoded`: Boundary mapping (Memory, Control Flow, ALU, Stack).
 * `Operand_Count`: Execution complexity scaling.
