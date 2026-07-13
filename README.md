@@ -24,13 +24,13 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 ## Known Limitations
 This application operates under the following constraints:
 
-1. Simulated Environment: Predictions are based on a simulated instruction dataset; performance on physical vintage 8086 hardware may vary due to undocumented hardware quirks or thermal throttling.
+1. **Simulated Environment**: Predictions are based on a simulated instruction dataset; performance on physical vintage 8086 hardware may vary due to undocumented hardware quirks or thermal throttling.
 
-2. Instruction Scope: Currently focuses on standard integer instruction sets. Complex, non-standard, or obscure legacy interrupts are not within the model's training distribution.
+2. **Instruction Scope**: Currently focuses on standard integer instruction sets. Complex, non-standard, or obscure legacy interrupts are not within the model's training distribution.
 
-3. Static Pipeline Assumption: The model predicts cycle latency for individual instructions but does not currently simulate multi-stage pipeline hazards or complex out-of-order execution scenarios common in modern processors.
+3. **Static Pipeline Assumption**: The model predicts cycle latency for individual instructions but does not currently simulate multi-stage pipeline hazards or complex out-of-order execution scenarios common in modern processors.
 
-4. Hardware Variation: The "Memory Bus Latency" driver assumes standard bus speeds. It does not account for modern memory controller overhead if the code is emulated on a host machine.
+4. **Hardware Variation**: The "Memory Bus Latency" driver assumes standard bus speeds. It does not account for modern memory controller overhead if the code is emulated on a host machine.
 
 ## Local Development Setup
 
