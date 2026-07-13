@@ -22,29 +22,32 @@ class InstructionRequest(BaseModel):
 
 def predict_hardware_latency(asm_instruction, ml_model, encoder):
     try:
-        tokens = asm_instruction.strip().split()
-        if not tokens:
-            return {"error": "Empty instruction"}
-            
-        opcode = tokens[0].upper()
-        operand_count = len(asm_instruction.split(',')) if ',' in asm_instruction else (1 if len(tokens) > 1 else 0)
-        memory_access = 1 if '[' in asm_instruction and ']' in asm_instruction else 0
-        immediate_value = 1 if 'H' in tokens[-1].upper() or tokens[-1].isdigit() else 0
+        clean_asm = asm_instruction.strip().upper()
+        tokens = clean_asm.split()
+        if not tokens: return {"error": "Empty instruction"}
         
+        opcode = tokens[0]
+       
         try:
             opcode_encoded = encoder.transform([opcode])[0]
         except ValueError:
-            opcode_encoded = -1 
-            
-        if memory_access and (opcode in ["MOV", "ADD", "SUB", "CMP"]):
-            category_encoded = 1 
-        elif opcode in ["PUSH", "POP"]:
-            category_encoded = 4 
+            return {"error": f"Opcode '{opcode}' not found in training vocabulary."}
+
+    
+        operand_count = len(clean_asm.split(',')) if ',' in clean_asm else (1 if len(tokens) > 1 else 0)
+        memory_access = 1 if '[' in clean_asm and ']' in clean_asm else 0
+        immediate_value = 1 if 'H' in clean_asm or any(char.isdigit() for char in tokens[-1]) else 0
+        
+        if memory_access:
+            category_encoded = 1
         elif opcode.startswith("J") or opcode == "LOOP":
-            category_encoded = 2 
+            category_encoded = 2
+        elif opcode in ["PUSH", "POP"]:
+            category_encoded = 4
         else:
-            category_encoded = 3 
+            category_encoded = 3
             
+        
         input_array = np.array([[opcode_encoded, category_encoded, operand_count, memory_access, immediate_value]])
         predicted_cycles = float(ml_model.predict(input_array)[0])
         
