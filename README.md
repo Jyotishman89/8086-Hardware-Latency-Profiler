@@ -21,7 +21,7 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 * `Memory_Access`: Binary flag for physical RAM interaction.
 * `Immediate_Value`: Binary flag for hardware bus loading.
 
-## Known Limitations
+## Limitations
 This application operates under the following constraints:
 
 1. **Simulated Environment**: Predictions are based on a simulated instruction dataset; performance on physical vintage 8086 hardware may vary due to undocumented hardware quirks or thermal throttling.
