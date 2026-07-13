@@ -1,0 +1,14 @@
+# Jupyter Notebook artifacts
+.ipynb_checkpoints/
+
+# Environment and local settings
+anaconda_projects/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS generated files
+.DS_Store
+Thumbs.db
