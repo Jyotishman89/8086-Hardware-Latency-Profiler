@@ -21,6 +21,17 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 * `Memory_Access`: Binary flag for physical RAM interaction.
 * `Immediate_Value`: Binary flag for hardware bus loading.
 
+## Known Limitations
+This application operates under the following constraints:
+
+1. Simulated Environment: Predictions are based on a simulated instruction dataset; performance on physical vintage 8086 hardware may vary due to undocumented hardware quirks or thermal throttling.
+
+2. Instruction Scope: Currently focuses on standard integer instruction sets. Complex, non-standard, or obscure legacy interrupts are not within the model's training distribution.
+
+3. Static Pipeline Assumption: The model predicts cycle latency for individual instructions but does not currently simulate multi-stage pipeline hazards or complex out-of-order execution scenarios common in modern processors.
+
+4. Hardware Variation: The "Memory Bus Latency" driver assumes standard bus speeds. It does not account for modern memory controller overhead if the code is emulated on a host machine.
+
 ## Local Development Setup
 
 Clone the repository and ignite the dual-server environment:
