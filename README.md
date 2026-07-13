@@ -1,10 +1,10 @@
-# 8086 Hardware Latency Profiler 🚀
+# 8086 Hardware Latency Profiler 
 
 An end-to-end machine learning developer tool designed to predict hardware execution latency and simulate architectural bottlenecks for 8086 assembly instructions. 
 
 This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics and dynamic optimization heuristics through a React-based interface.
 
-## 🧠 System Architecture
+## System Architecture
 
 The application is structured as a decoupled full-stack machine learning pipeline:
 
@@ -12,7 +12,7 @@ The application is structured as a decoupled full-stack machine learning pipelin
 * **Backend Inference API (FastAPI/Python):** A high-speed, localized REST API that parses raw assembly text, applies one-hot categorical encoding, and serves SHAP-driven execution heuristics via native JSON payloads.
 * **Frontend Dashboard (React/Vite/Tailwind):** A dark-mode, terminal-inspired UI that visualizes latency bottlenecks (e.g., Memory Bus vs. ALU execution) and translates numerical ML outputs into actionable developer insights.
 
-## 📊 Feature Engineering & Heuristics
+## Feature Engineering & Heuristics
 
 Raw assembly strings are dynamically parsed into dimensional feature vectors in $O(1)$ constant time:
 * `Opcode_Encoded`: Base algorithmic categorization.
@@ -21,7 +21,7 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 * `Memory_Access`: Binary flag for physical RAM interaction.
 * `Immediate_Value`: Binary flag for hardware bus loading.
 
-## 🚀 Local Development Setup
+## Local Development Setup
 
 Clone the repository and ignite the dual-server environment:
 
