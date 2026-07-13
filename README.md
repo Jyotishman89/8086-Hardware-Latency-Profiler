@@ -8,7 +8,7 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 
 The application is structured as a decoupled full-stack machine learning pipeline:
 
-* **Machine Learning Engine (XGBoost):** Trained on 2,000 simulated physical boundary instruction sets. Predicts clock cycle latency with a 95.31% $R^2$ score and a Mean Absolute Error (MAE) of 1.02 cycles.
+* **Machine Learning Engine (XGBoost):** Trained on 2,000 simulated physical boundary instruction sets. Predicts clock cycle latency with a 95.31% R² score and a Mean Absolute Error (MAE) of 1.02 cycles.
 * **Backend Inference API (FastAPI/Python):** A high-speed, localized REST API that parses raw assembly text, applies one-hot categorical encoding, and serves SHAP-driven execution heuristics via native JSON payloads.
 * **Frontend Dashboard (React/Vite/Tailwind):** A dark-mode, terminal-inspired UI that visualizes latency bottlenecks (e.g., Memory Bus vs. ALU execution) and translates numerical ML outputs into actionable developer insights.
 
