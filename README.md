@@ -26,11 +26,15 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 Clone the repository and ignite the dual-server environment:
 
 ### 1. Boot the Inference Server
+```bash
 cd backend
 pip install fastapi uvicorn pydantic joblib xgboost pandas numpy
 uvicorn main:app --reload
+```
 
 ### 2. Boot the UI Dashboard
+```bash
 cd frontend
 npm install
 npm run dev
+```
