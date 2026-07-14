@@ -39,7 +39,7 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 
 Following code snippets are given as examples for reference:
 
-1.**The Optimal ALU Path (Green Telemetry)**\
+1. **The Optimal ALU Path (Green Telemetry)**\
 Keeps arithmetic confined to internal circuitry and utilizes hardware acceleration.
 
 ```
@@ -48,7 +48,7 @@ MOV BX, 000AH
 ADD AX, BX
 SHL AX, 1
 ```
-2.**BIU Memory Saturation (Amber Telemetry)**\
+2. **BIU Memory Saturation (Amber Telemetry)**\
 Forces the system to rely heavily on the stack, triggering bus wait-states.
 
 ```
@@ -59,7 +59,7 @@ POP BX
 POP AX
 ```
 
-3.**The Pipeline Hazard (Red Telemetry)**\
+3. **The Pipeline Hazard (Red Telemetry)**\
 Simulates conditional states and branches, forcing the CPU to flush its 6-byte instruction prefetch queue.
 
 ```
