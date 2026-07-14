@@ -13,7 +13,7 @@ The application is structured as a decoupled full-stack machine learning pipelin
 * **Frontend Dashboard (React/Vite/Tailwind):** A dark-mode, terminal-inspired UI that visualizes latency bottlenecks (e.g., Memory Bus vs. ALU execution) and translates numerical ML outputs into actionable developer insights.
 
 ## Feature Engineering & Heuristics
-**Basic Block Hotspot Analysis**
+**Basic Block Hotspot Analysis**\
 The profiler accepts multi-line code blocks, dynamically scanning the array to tally total clock cycles and isolate the exact line number causing the primary pipeline bottleneck.
 
 Raw assembly strings are dynamically parsed into dimensional feature vectors in **O(1)** constant time:
