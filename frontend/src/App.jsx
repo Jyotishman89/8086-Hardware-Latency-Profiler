@@ -1,6 +1,52 @@
 import React, { useState } from 'react';
 import { Terminal, Cpu, Zap, Activity } from 'lucide-react';
 
+// 1. THE PARSER FUNCTION: This intercepts the insight string and color-codes it.
+const formatInsight = (insightText) => {
+  if (!insightText) return null;
+  
+  // RegEx to look for anything inside brackets at the start of the string
+  const match = insightText.match(/^\[(.*?)\]\s*(.*)$/);
+  
+  // If no brackets are found, just return the normal text
+  if (!match) {
+    return <p className="text-slate-300 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">"{insightText}"</p>;
+  }
+
+  const tag = match[1];
+  const message = match[2];
+
+  // Default color (Blue/Cyan for neutral operations)
+  let tagColor = "text-cyan-400 border-cyan-400/30 bg-cyan-400/10"; 
+  
+  const upperTag = tag.toUpperCase();
+  // Severe / Fatal (Red)
+  if (upperTag.includes('CRITICAL') || upperTag.includes('FATAL') || upperTag.includes('HAZARD')) {
+    tagColor = "text-rose-400 border-rose-400/30 bg-rose-400/10 shadow-[0_0_10px_rgba(244,63,94,0.2)]";
+  } 
+  // Warnings / Memory Bounds (Amber)
+  else if (upperTag.includes('BOUND') || upperTag.includes('SATURATION') || upperTag.includes('STALL')) {
+    tagColor = "text-amber-400 border-amber-400/30 bg-amber-400/10 shadow-[0_0_10px_rgba(251,191,36,0.2)]";
+  } 
+  // Excellent / Optimal (Emerald)
+  else if (upperTag.includes('OPTIMAL') || upperTag.includes('ACCELERATED') || upperTag.includes('EFFICIENT') || upperTag.includes('CLEAR')) {
+    tagColor = "text-emerald-400 border-emerald-400/30 bg-emerald-400/10 shadow-[0_0_10px_rgba(52,211,153,0.2)]";
+  }
+
+  return (
+    <div className="flex flex-col gap-3 mt-1">
+      {/* The glowing, color-coded diagnostic tag */}
+      <span className={`inline-block px-3 py-1 text-[11px] font-bold tracking-widest uppercase border rounded w-fit ${tagColor}`}>
+        {tag}
+      </span>
+      {/* The architectural advice */}
+      <span className="text-slate-300 text-sm leading-relaxed font-mono pl-4 border-l-2 border-slate-700">
+        {message}
+      </span>
+    </div>
+  );
+};
+
 function App() {
   const [asm, setAsm] = useState('MOV AX, [BX]\nADD CX, 1\nJZ LABEL_END');
   const [data, setData] = useState(null);
@@ -39,12 +85,13 @@ function App() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Input Terminal */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl">
           <div className="flex items-center gap-2 mb-4 text-slate-400 uppercase text-xs tracking-widest">
             <Terminal size={16} /> Assembly Input (Multi-Line Supported)
           </div>
           <textarea 
-            className="w-full h-48 bg-slate-950 border border-slate-800 rounded-lg p-4 text-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all uppercase resize-none"
+            className="w-full h-48 bg-slate-950 border border-slate-800 rounded-lg p-4 text-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all uppercase resize-none shadow-inner"
             value={asm}
             onChange={(e) => setAsm(e.target.value)}
             spellCheck="false"
@@ -56,13 +103,14 @@ function App() {
           >
             <Zap size={18} /> {loading ? 'ANALYZING PIPELINE...' : 'RUN_HOTSPOT_ANALYSIS'}
           </button>
-          {error && <div className="mt-4 text-red-400 text-sm">{error}</div>}
+          {error && <div className="mt-4 text-rose-400 text-sm">{error}</div>}
         </div>
 
+        {/* Dynamic Results Panel */}
         {data && !data.error && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl">
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl relative overflow-hidden">
                 <div className="text-slate-500 text-xs mb-2">TOTAL_PREDICTED_T_STATES</div>
                 <div className="text-4xl font-bold text-emerald-400">{data.total_t_states}</div>
               </div>
@@ -73,13 +121,15 @@ function App() {
               </div>
             </div>
 
-            <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-xl">
-              <div className="flex items-center gap-2 text-emerald-400 mb-2 font-bold uppercase text-xs">
-                <Activity size={16} /> Optimization_Insight (Line {data.bottleneck_line})
+            {/* 2. Upgraded Insight Panel container (neutral dark so colors pop) */}
+            <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl">
+              <div className="flex items-center gap-2 text-slate-400 mb-4 font-bold uppercase text-xs">
+                <Activity size={16} /> Optimization_Directive (Line {data.bottleneck_line})
               </div>
-              <p className="text-slate-300 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">
-                "{data.insight}"
-              </p>
+              
+              {/* 3. Passing the string into our new parser */}
+              {formatInsight(data.insight)}
+              
             </div>
           </div>
         )}

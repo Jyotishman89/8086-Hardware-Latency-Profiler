@@ -2,7 +2,19 @@
 
 An end-to-end machine learning developer tool designed to predict hardware execution latency and simulate architectural bottlenecks for 8086 assembly instructions. 
 
-This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, multi-line hotspot analysis, and dynamic optimization heuristics through a React-based interface.
+This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, multi-line hotspot analysis, and dynamic silicon-level optimization heuristics through a React-based diagnostic terminal.
+
+## Overview
+Traditional profilers count static clock cycles. This engine utilizes an XGBoost regressor trained on 2,000 simulated physical boundary instruction sets to dynamically evaluate memory bus saturation, Execution Unit (EU) efficiency, and prefetch queue hazards in real-time. The model achieves a **95.31% R² score** with a Mean Absolute Error (MAE) of **1.02 cycles**.
+
+## Key Features
+
+* **Multi-Line Hotspot Analysis:** Paste entire sub-routines. The batch-processing API (`/predict_block`) dynamically scans the code block, aggregates total clock cycles, and isolates the exact line number causing the primary pipeline bottleneck.
+* **Telemetry Diagnostics:** Replaces basic coding advice with color-coded, hardware-level directives via a custom React RegEx parser:
+  * 🟢 **[ALU OPTIMAL]** - Identifies highly efficient internal register arithmetic.
+  * 🟡 **[EXTERNAL MEMORY SATURATION]** - Flags heavy Bus Interface Unit (BIU) wait-states.
+  * 🔴 **[SPECULATIVE HAZARD]** - Warns of severe prefetch queue flushes caused by branching.
+* **Non-Blocking Inference:** A decoupled full-stack architecture separating the heavy XGBoost heuristics from the high-speed Vite/Tailwind frontend.
 
 ## System Architecture
 
@@ -23,6 +35,40 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 * `Memory_Access`: Binary flag for physical RAM interaction.
 * `Immediate_Value`: Binary flag for hardware bus loading.
 
+## Interactive Hotspot Testing
+
+Following code snippets are given as examples for reference:
+
+1. **The Optimal ALU Path (Green Telemetry)**\
+Keeps arithmetic confined to internal circuitry and utilizes hardware acceleration.
+
+```
+MOV AX, 0005H
+MOV BX, 000AH
+ADD AX, BX
+SHL AX, 1
+```
+2. **BIU Memory Saturation (Amber Telemetry)**\
+Forces the system to rely heavily on the stack, triggering bus wait-states.
+
+```
+PUSH AX
+PUSH BX
+MOV CX, [DI]
+POP BX
+POP AX
+```
+
+3. **The Pipeline Hazard (Red Telemetry)**\
+Simulates conditional states and branches, forcing the CPU to flush its 6-byte instruction prefetch queue.
+
+```
+CMP CX, 0000H
+JZ END_ROUTINE
+SUB CX, 1
+JMP START_LOOP
+```
+
 ## Limitations
 This application operates under the following constraints:
 
@@ -34,18 +80,24 @@ This application operates under the following constraints:
 
 4. **Hardware Variation**: The "Memory Bus Latency" driver assumes standard bus speeds. It does not account for modern memory controller overhead if the code is emulated on a host machine rather than native silicon.
 
+5. **Heuristic Telemetry Tagging**: The diagnostic tags (e.g., **[SPECULATIVE HAZARD]**) are currently driven by a static, rule-based architectural mapping in the backend rather than dynamically inferred by the XGBoost regressor. Furthermore, the React UI relies on strict RegEx string matching; any deviation in the backend telemetry syntax will cause the parser to default to neutral styling.
+
 ## Local Development Setup
 
-Clone the repository and ignite the dual-server environment:
+### 1. Clone the repository 
+```bash
+git clone https://github.com/Jyotishman89/8086-Hardware-Latency-Profiler.git
+cd 8086-Hardware-Latency-Profiler
+```
 
-### 1. Boot the Inference Server
+### 2. Boot the Inference Server
 ```bash
 cd backend
 pip install fastapi uvicorn pydantic joblib xgboost pandas numpy
 uvicorn main:app --reload
 ```
 
-### 2. Boot the UI Dashboard
+### 3. Boot the UI Dashboard
 ```bash
 cd frontend
 npm install

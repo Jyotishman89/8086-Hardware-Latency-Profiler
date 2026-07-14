@@ -54,46 +54,46 @@ def predict_hardware_latency(asm_instruction, ml_model, encoder):
         predicted_cycles = float(ml_model.predict(input_array)[0])
         
         drivers = {
-            "MOV": "Data Transfer Cycle",
-            "ADD": "Arithmetic Addition Overhead",
-            "SUB": "Arithmetic Subtraction Overhead",
-            "CMP": "Comparison Logic Latency",
-            "JMP": "Unconditional Branch Stall",
+            "MOV": "Execution Unit Transfer",
+            "ADD": "ALU Arithmetic Execution",
+            "SUB": "ALU Arithmetic Execution",
+            "CMP": "Status Flag Mutation",
+            "JMP": "Prefetch Queue Flush",
             "JNE": "Conditional Branch Stall",
-            "JZ": "Zero Branch Penalty",
-            "JNZ": "Non-Zero Branch Penalty",
-            "LOOP": "Loop Counter Decrement Penalty",
-            "PUSH": "Stack Push Operation",
-            "POP": "Stack Pop Operation",
-            "SHL": "Bitwise Left Shift Execution",
-            "SHR": "Bitwise Right Shift Execution"
+            "JZ": "Conditional Branch Stall",
+            "JNZ": "Conditional Branch Stall",
+            "LOOP": "Micro-Op Iteration",
+            "PUSH": "SS:SP Bus Write Cycle",
+            "POP": "SS:SP Bus Read Cycle",
+            "SHL": "Hardware Shift Acceleration",
+            "SHR": "Hardware Shift Acceleration"
         }
-        
+
         insights = {
-            "MOV": "Data transfer is highly efficient. Direct register manipulation maximizes throughput.",
-            "ADD": "Arithmetic operation completed within register space. Low propagation delay.",
-            "SUB": "Subtraction completed natively via two's complement execution circuitry.",
-            "CMP": "Comparison modifies status flags without changing destination operands.",
-            "JMP": "Unconditional branch flushes the prefetch queue. Minimize random jumps.",
-            "JNE": "Pipeline stall danger if branch is taken. Keep target within short range.",
-            "JZ": "Conditional branch evaluated via zero flag state.",
-            "JNZ": "Conditional branch evaluated via inverse zero flag state.",
-            "LOOP": "Combines CX decrement and jump. Ensure loop body contains low latency code.",
-            "PUSH": "Interacts with stack segment via SP pointer. Watch for memory bus access.",
-            "POP": "Retrieves value from stack memory. Ensure aligned word bounds.",
-            "SHL": "Fast bitwise multiplication. Highly optimized hardware execution.",
-            "SHR": "Fast bitwise division. Multi-bit shifts take uniform single cycles."
+            "MOV": "[PIPELINE CLEAR] EU localized transfer. No BIU penalty. Maintain operand alignment for zero wait-state execution.",
+            "ADD": "[ALU OPTIMAL] Native silicon execution. Utilizing primary accumulator bypasses BIU fetch latency.",
+            "SUB": "[ALU OPTIMAL] Two's complement hardware path active. Bounded strictly to general-purpose registers.",
+            "CMP": "[STATE MUTATION] Non-destructive ALU pass. Modifies CPU status flags natively without external bus cycles.",
+            "JMP": "[CRITICAL BOTTLENECK] Unconditional branch forces a complete 6-byte prefetch queue flush. Restructure logic flow to mitigate pipeline reset.",
+            "JNE": "[SPECULATIVE HAZARD] High stall risk. If branch taken, BIU discards queue. Invert logic to favor fall-through path (4 T-states).",
+            "JZ": "[SPECULATIVE HAZARD] ZF=1 branch evaluation. High latency upon flush. Guarantee the fall-through is the statistically dominant execution path.",
+            "JNZ": "[SPECULATIVE HAZARD] ZF=0 branch evaluation. High latency upon flush. Guarantee the fall-through is the statistically dominant execution path.",
+            "LOOP": "[MICROCODE EFFICIENT] Combined CX decrement and jump micro-ops. Optimal for tight memory-bound iterations.",
+            "PUSH": "[MEMORY BOUND] BIU write cycle to SS:SP. High bus saturation risk. Batch stack operations to minimize sequential access latency.",
+            "POP": "[MEMORY BOUND] BIU read cycle from SS:SP. Susceptible to subsystem wait states. Ensure word-aligned boundaries.",
+            "SHL": "[HARDWARE ACCELERATED] Internal shift register utilized. Bypasses standard ALU propagation. Optimal for base-2 multiplication.",
+            "SHR": "[HARDWARE ACCELERATED] Internal shift register utilized. Bypasses standard ALU propagation. Optimal for base-2 division."
         }
-        
-        primary_driver = drivers.get(opcode, "Standard ALU/Register Execution")
-        suggestion = insights.get(opcode, "Optimal execution path. Keep critical math inside internal circuitry.")
-        
+
+        primary_driver = drivers.get(opcode, "Standard ALU Execution")
+        suggestion = insights.get(opcode, "[STANDARD EXECUTION] Optimal microcode path. Keep critical arithmetic confined to internal circuitry.")
+
         if memory_access:
-            primary_driver = "Memory Bus Interface Latency"
-            suggestion = f"Memory read/write detected for {opcode}. Switch to register addressable elements to optimize speed."
+            primary_driver = "BIU Bus Saturation"
+            suggestion = f"[EXTERNAL MEMORY SATURATION] Operand forces BIU external bus cycle for {opcode}. Promote to internal register (AX/BX/CX/DX) to reclaim wait-state clock cycles."
         elif opcode_encoded == -1:
-            primary_driver = "Unknown Hardware Instruction"
-            suggestion = "Instruction not recognized in the hardware model profile. Verify 8086 alignment."
+            primary_driver = "Unknown Microcode"
+            suggestion = "[FATAL] Instruction missing from hardware profile. Verify strict 8086 ISA alignment."
             
         return {
             "predicted_cycles": round(predicted_cycles, 2),
