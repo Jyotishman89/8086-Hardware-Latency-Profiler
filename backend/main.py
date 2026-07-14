@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import pandas as pd
 import numpy as np
+from typing import List
 
 app = FastAPI()
 
@@ -20,6 +21,9 @@ label_encoder = joblib.load('8086_label_encoder.pkl')
 class InstructionRequest(BaseModel):
     asm: str
 
+class CodeBlock(BaseModel):
+    instructions: List[str]
+
 def predict_hardware_latency(asm_instruction, ml_model, encoder):
     try:
         clean_asm = asm_instruction.strip().upper()
@@ -27,13 +31,12 @@ def predict_hardware_latency(asm_instruction, ml_model, encoder):
         if not tokens: return {"error": "Empty instruction"}
         
         opcode = tokens[0]
-       
+        
         try:
             opcode_encoded = encoder.transform([opcode])[0]
         except ValueError:
             return {"error": f"Opcode '{opcode}' not found in training vocabulary."}
 
-    
         operand_count = len(clean_asm.split(',')) if ',' in clean_asm else (1 if len(tokens) > 1 else 0)
         memory_access = 1 if '[' in clean_asm and ']' in clean_asm else 0
         immediate_value = 1 if 'H' in clean_asm or any(char.isdigit() for char in tokens[-1]) else 0
@@ -47,7 +50,6 @@ def predict_hardware_latency(asm_instruction, ml_model, encoder):
         else:
             category_encoded = 3
             
-        
         input_array = np.array([[opcode_encoded, category_encoded, operand_count, memory_access, immediate_value]])
         predicted_cycles = float(ml_model.predict(input_array)[0])
         
@@ -105,3 +107,55 @@ def predict_hardware_latency(asm_instruction, ml_model, encoder):
 async def get_prediction(request: InstructionRequest):
     result = predict_hardware_latency(request.asm, model, label_encoder)
     return result
+
+@app.post("/predict_block")
+async def predict_code_block(block: CodeBlock):
+    total_t_states = 0
+    max_latency = -1
+    bottleneck_line = 0
+    bottleneck_instruction = ""
+    worst_bottleneck_name = ""
+    best_insight = ""
+    
+    line_results = []
+
+    for idx, instruction in enumerate(block.instructions):
+        instruction = instruction.strip()
+        if not instruction:
+            continue
+            
+        result = predict_hardware_latency(instruction, model, label_encoder)
+        
+        if "error" in result:
+            line_results.append({
+                "line": idx + 1,
+                "instruction": instruction,
+                "error": result["error"]
+            })
+            continue
+        
+        latency = result["predicted_cycles"]
+        
+        total_t_states += latency
+        
+        if latency > max_latency:
+            max_latency = latency
+            bottleneck_line = idx + 1
+            bottleneck_instruction = instruction
+            worst_bottleneck_name = result["primary_driver"]
+            best_insight = result["optimization_insight"]
+
+        line_results.append({
+            "line": idx + 1,
+            "instruction": instruction,
+            "t_states": latency
+        })
+
+    return {
+        "total_t_states": round(total_t_states, 2),
+        "bottleneck_line": bottleneck_line,
+        "bottleneck_instruction": bottleneck_instruction,
+        "primary_bottleneck": worst_bottleneck_name,
+        "insight": best_insight,
+        "breakdown": line_results
+    }

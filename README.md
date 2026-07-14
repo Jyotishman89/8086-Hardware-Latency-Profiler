@@ -2,7 +2,7 @@
 
 An end-to-end machine learning developer tool designed to predict hardware execution latency and simulate architectural bottlenecks for 8086 assembly instructions. 
 
-This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics and dynamic optimization heuristics through a React-based interface.
+This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, multi-line hotspot analysis, and dynamic optimization heuristics through a React-based interface.
 
 ## System Architecture
 
@@ -13,6 +13,8 @@ The application is structured as a decoupled full-stack machine learning pipelin
 * **Frontend Dashboard (React/Vite/Tailwind):** A dark-mode, terminal-inspired UI that visualizes latency bottlenecks (e.g., Memory Bus vs. ALU execution) and translates numerical ML outputs into actionable developer insights.
 
 ## Feature Engineering & Heuristics
+**Basic Block Hotspot Analysis**
+The profiler accepts multi-line code blocks, dynamically scanning the array to tally total clock cycles and isolate the exact line number causing the primary pipeline bottleneck.
 
 Raw assembly strings are dynamically parsed into dimensional feature vectors in $O(1)$ constant time:
 * `Opcode_Encoded`: Base algorithmic categorization.
@@ -24,13 +26,13 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 ## Limitations
 This application operates under the following constraints:
 
-1. **Simulated Environment**: Predictions are based on a simulated instruction dataset; performance on physical vintage 8086 hardware may vary due to undocumented hardware quirks or thermal throttling.
+1. **Simulated Environment**: Predictions are based on a simulated instruction dataset; performance on physical vintage 8086 hardware may vary due to undocumented hardware quirks, silicon degradation, or thermal constraints.
 
 2. **Instruction Scope**: Currently focuses on standard integer instruction sets. Complex, non-standard, or obscure legacy interrupts are not within the model's training distribution.
 
-3. **Static Pipeline Assumption**: The model predicts cycle latency for individual instructions but does not currently simulate multi-stage pipeline hazards or complex out-of-order execution scenarios common in modern processors.
+3. **Static Block Aggregation**: While the application fully supports multi-line batch processing and flags localized bottlenecks, it aggregates static execution costs and heuristic branch penalties. It does not act as a full cycle-accurate CPU emulator (e.g., it does not dynamically track historical cache lines or advanced state-dependent hardware bugs).
 
-4. **Hardware Variation**: The "Memory Bus Latency" driver assumes standard bus speeds. It does not account for modern memory controller overhead if the code is emulated on a host machine.
+4. **Hardware Variation**: The "Memory Bus Latency" driver assumes standard bus speeds. It does not account for modern memory controller overhead if the code is emulated on a host machine rather than native silicon.
 
 ## Local Development Setup
 
