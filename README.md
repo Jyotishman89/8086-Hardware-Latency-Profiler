@@ -12,6 +12,54 @@ The application is structured as a decoupled full-stack machine learning pipelin
 * **Backend Inference API (FastAPI/Python):** A high-speed, localized REST API that parses raw assembly text, applies one-hot categorical encoding, and serves SHAP-driven execution heuristics via native JSON payloads.
 * **Frontend Dashboard (React/Vite/Tailwind):** A dark-mode, terminal-inspired UI that visualizes latency bottlenecks (e.g., Memory Bus vs. ALU execution) and translates numerical ML outputs into actionable developer insights.
 
+### Architecture Diagram
+```mermaid
+graph TD
+    subgraph Frontend UI
+        React[React + Tailwind Dashboard]
+    end
+
+    subgraph FastAPI Backend
+        API[POST /predict Endpoint]
+        Parser[Instruction Parser]
+        FeatureGen[Feature Extractor]
+    end
+
+    subgraph ML Pipeline
+        Encoder[Label Encoder .pkl]
+        Array[5-Dimensional Input Array]
+        XGBoost[(XGBoost Model .pkl)]
+    end
+
+    %% Data Flow
+    React -- "Raw Assembly\n(e.g., MOV AX, BX)" --> API
+    API --> Parser
+    
+    %% Split Logic
+    Parser -- "Extracts Base Opcode\n(MOV)" --> Encoder
+    Parser -- "Analyzes Syntax" --> FeatureGen
+    
+    %% Array Assembly
+    Encoder -- "Categorical Integer" --> Array
+    FeatureGen -- "Memory, Operand, & Immed Flags" --> Array
+    
+    %% Prediction
+    Array -- "Numpy Array" --> XGBoost
+    XGBoost -- "Predicted Cycles" --> API
+    
+    %% Return
+    API -- "JSON Response\n(Metrics & Insights)" --> React
+
+    %% Styling
+    style React fill:#0891b2,stroke:#000,stroke-width:2px,color:#fff
+    style API fill:#16a34a,stroke:#000,stroke-width:2px,color:#fff
+    style Parser fill:#16a34a,stroke:#000,stroke-width:1px,color:#fff
+    style FeatureGen fill:#16a34a,stroke:#000,stroke-width:1px,color:#fff
+    style XGBoost fill:#ea580c,stroke:#000,stroke-width:2px,color:#fff
+    style Encoder fill:#ea580c,stroke:#000,stroke-width:1px,color:#fff
+    style Array fill:#475569,stroke:#000,stroke-width:1px,color:#fff
+```
+
 ## Feature Engineering & Heuristics
 
 Raw assembly strings are dynamically parsed into dimensional feature vectors in **O(1)** constant time:
