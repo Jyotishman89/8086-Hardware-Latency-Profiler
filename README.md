@@ -4,7 +4,7 @@ A performance estimation tool that uses Machine Learning to predict assembly ins
 
 ## Overview
 
-The 8086 Hardware Latency Profiler is a performance estimation tool that uses Machine Learning to predict instruction timing based on architectural features. While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level heuristic analysis. By mapping assembly instructions to engineered feature vectors, it identifies architectural bottlenecks (such as high-latency memory bus cycles or branch penalties) to help developers optimize their code at the algorithmic level.The model achieves a **95.31% R² score** with a Mean Absolute Error (MAE) of **1.02 cycles**.
+The 8086 Hardware Latency Profiler is a performance estimation tool that uses Machine Learning to predict instruction timing based on architectural features. While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level heuristic analysis. By mapping assembly instructions to engineered feature vectors, it identifies architectural bottlenecks (such as high-latency memory bus cycles or branch penalties) to help developers optimize their code at the algorithmic level. The model achieves a **95.31% R² score** with a Mean Absolute Error (MAE) of **1.02 cycles**.
 
 ## Key Features
 
@@ -40,7 +40,7 @@ Raw assembly strings are dynamically parsed into compact numerical feature vecto
 Following code snippets are given as reference examples for testing the tool:
 
 1. **The Optimal ALU Path (Green Telemetry)**\
-Keeps arithmetic confined to internal circuitry and keeps computation within CPU registers and minimizes memory access.
+Keeps computation within CPU registers and minimizes memory access.
 
 ```
 MOV AX, 0005H
