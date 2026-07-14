@@ -1,11 +1,10 @@
 # 8086 Hardware Latency Profiler 
 
-An end-to-end machine learning developer tool designed to predict hardware execution latency and simulate architectural bottlenecks for 8086 assembly instructions. 
-
-This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, multi-line hotspot analysis, and dynamic silicon-level optimization heuristics through a React-based diagnostic terminal.
+A performance estimation tool that uses Machine Learning to predict assembly instruction timing based on architectural features. This project bridges the gap between raw assembly syntax and hardware performance expectations by providing block-level heuristic analysis.
 
 ## Overview
-Traditional profilers count static clock cycles. This engine utilizes an XGBoost regressor trained on 2,000 simulated physical boundary instruction sets to dynamically evaluate memory bus saturation, Execution Unit (EU) efficiency, and prefetch queue hazards in real-time. The model achieves a **95.31% R² score** with a Mean Absolute Error (MAE) of **1.02 cycles**.
+
+The 8086 Hardware Latency Profiler is a performance estimation tool that uses Machine Learning to predict instruction timing based on architectural features. While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level heuristic analysis. By mapping assembly instructions to engineered feature vectors, it identifies architectural bottlenecks (such as high-latency memory bus cycles or branch penalties) to help developers optimize their code at the algorithmic level.The model achieves a **95.31% R² score** with a Mean Absolute Error (MAE) of **1.02 cycles**.
 
 ## Key Features
 
@@ -72,11 +71,11 @@ JMP START_LOOP
 ## Limitations
 This application operates under the following constraints:
 
-1. **Simulated Environment**: Predictions are based on a simulated instruction dataset; performance on physical vintage 8086 hardware may vary due to undocumented hardware quirks, silicon degradation, or thermal constraints.
+1. **Heuristic-Based Analysis**: This tool is not a cycle-accurate emulator; it does not track historical register states or cache-line modifications across the entire execution flow. Instead, it performs block-level latency estimation.
 
-2. **Instruction Scope**: Currently focuses on standard integer instruction sets. Complex, non-standard, or obscure legacy interrupts are not within the model's training distribution.
+2. **​Architectural Feature Mapping**: Predictions are derived from a machine learning model trained on instruction-level timing data. While it captures the typical latency penalty of branch hazards and memory accesses, it does not account for environment-specific hardware quirks, thermal throttling, or real-time interrupt handling.
 
-3. **Static Block Aggregation**: While the application fully supports multi-line batch processing and flags localized bottlenecks, it aggregates static execution costs and heuristic branch penalties. It does not act as a full cycle-accurate CPU emulator (e.g., it does not dynamically track historical cache lines or advanced state-dependent hardware bugs).
+3. **​Static Estimation**: The profiler estimates latency based on the static execution cost of an instruction block. It does not account for the dynamic state of a physical CPU's instruction prefetch queue during multi-cycle execution.
 
 4. **Hardware Variation**: The "Memory Bus Latency" driver assumes standard bus speeds. It does not account for modern memory controller overhead if the code is emulated on a host machine rather than native silicon.
 
