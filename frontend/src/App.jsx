@@ -14,7 +14,6 @@ function App() {
     const instructionArray = asm.split('\n').filter(line => line.trim() !== '');
 
     try {
-      // 3. Ping the NEW batch endpoint
       const response = await fetch('http://127.0.0.1:8000/predict_block', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -40,7 +39,6 @@ function App() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Input Terminal */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl">
           <div className="flex items-center gap-2 mb-4 text-slate-400 uppercase text-xs tracking-widest">
             <Terminal size={16} /> Assembly Input (Multi-Line Supported)
