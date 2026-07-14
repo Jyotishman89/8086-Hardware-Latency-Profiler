@@ -32,10 +32,13 @@ def predict_hardware_latency(asm_instruction, ml_model, encoder):
         
         opcode = tokens[0]
         
+        if opcode.endswith(':'):
+            return {"is_label": True}
+        
         try:
             opcode_encoded = encoder.transform([opcode])[0]
         except ValueError:
-            return {"error": f"Opcode '{opcode}' not found in training vocabulary."}
+            opcode_encoded = -1
 
         operand_count = len(clean_asm.split(',')) if ',' in clean_asm else (1 if len(tokens) > 1 else 0)
         memory_access = 1 if '[' in clean_asm and ']' in clean_asm else 0
@@ -50,9 +53,6 @@ def predict_hardware_latency(asm_instruction, ml_model, encoder):
         else:
             category_encoded = 3
             
-        input_array = np.array([[opcode_encoded, category_encoded, operand_count, memory_access, immediate_value]])
-        predicted_cycles = float(ml_model.predict(input_array)[0])
-        
         drivers = {
             "MOV": "Execution Unit Transfer",
             "ADD": "ALU Arithmetic Execution",
@@ -84,16 +84,21 @@ def predict_hardware_latency(asm_instruction, ml_model, encoder):
             "SHL": "[HARDWARE ACCELERATED] Internal shift register utilized. Bypasses standard ALU propagation. Optimal for base-2 multiplication.",
             "SHR": "[HARDWARE ACCELERATED] Internal shift register utilized. Bypasses standard ALU propagation. Optimal for base-2 division."
         }
-
+        
         primary_driver = drivers.get(opcode, "Standard ALU Execution")
         suggestion = insights.get(opcode, "[STANDARD EXECUTION] Optimal microcode path. Keep critical arithmetic confined to internal circuitry.")
+        
+        if opcode_encoded == -1:
+            predicted_cycles = 999.99 
+            primary_driver = "Unknown Microcode Instruction"
+            suggestion = "[FATAL] Instruction missing from hardware profile. Verify strict 8086 ISA alignment."
+        else:
+            input_array = np.array([[opcode_encoded, category_encoded, operand_count, memory_access, immediate_value]])
+            predicted_cycles = float(ml_model.predict(input_array)[0])
 
         if memory_access:
             primary_driver = "BIU Bus Saturation"
             suggestion = f"[EXTERNAL MEMORY SATURATION] Operand forces BIU external bus cycle for {opcode}. Promote to internal register (AX/BX/CX/DX) to reclaim wait-state clock cycles."
-        elif opcode_encoded == -1:
-            primary_driver = "Unknown Microcode"
-            suggestion = "[FATAL] Instruction missing from hardware profile. Verify strict 8086 ISA alignment."
             
         return {
             "predicted_cycles": round(predicted_cycles, 2),
@@ -126,17 +131,16 @@ async def predict_code_block(block: CodeBlock):
             
         result = predict_hardware_latency(instruction, model, label_encoder)
         
+        if result.get("is_label"):
+            continue
+            
         if "error" in result:
-            line_results.append({
-                "line": idx + 1,
-                "instruction": instruction,
-                "error": result["error"]
-            })
             continue
         
         latency = result["predicted_cycles"]
         
-        total_t_states += latency
+        if latency != 999.99:
+            total_t_states += latency
         
         if latency > max_latency:
             max_latency = latency
@@ -148,7 +152,7 @@ async def predict_code_block(block: CodeBlock):
         line_results.append({
             "line": idx + 1,
             "instruction": instruction,
-            "t_states": latency
+            "t_states": latency if latency != 999.99 else 0
         })
 
     return {

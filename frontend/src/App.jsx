@@ -103,11 +103,23 @@ function App() {
                 <div className="text-slate-500 text-xs mb-2">TOTAL_PREDICTED_T_STATES</div>
                 <div className="text-4xl font-bold text-emerald-400">{data.total_t_states}</div>
               </div>
+              
               <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl">
-                <div className="text-slate-500 text-xs mb-2">PRIMARY_BOTTLENECK</div>
-                <div className="text-lg font-bold text-rose-400">Line {data.bottleneck_line}</div>
+                <div className="text-slate-500 text-xs mb-2">
+                  {data.insight.toUpperCase().match(/(OPTIMAL|ACCELERATED|CLEAR|EFFICIENT)/)
+                    ? 'HEAVIEST_INSTRUCTION (OPTIMAL)' 
+                    : 'PRIMARY_BOTTLENECK'}
+                </div>
+                <div className={`text-lg font-bold ${
+                  data.insight.toUpperCase().match(/(OPTIMAL|ACCELERATED|CLEAR|EFFICIENT)/)
+                    ? 'text-emerald-400'
+                    : 'text-rose-400'
+                }`}>
+                  Line {data.bottleneck_line}
+                </div>
                 <div className="text-sm font-semibold text-slate-200 mt-1">{data.primary_bottleneck}</div>
               </div>
+
             </div>
 
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl">
