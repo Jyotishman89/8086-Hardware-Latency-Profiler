@@ -37,7 +37,7 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 
 ## Interactive Hotspot Testing
 
-Following code snippets are given as examples for reference:
+Following code snippets are given as reference examples for testing the tool:
 
 1. **The Optimal ALU Path (Green Telemetry)**\
 Keeps arithmetic confined to internal circuitry and utilizes hardware acceleration.
