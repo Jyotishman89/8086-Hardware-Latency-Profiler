@@ -27,7 +27,8 @@ The application is structured as a decoupled full-stack machine learning pipelin
 **Basic Block Hotspot Analysis**\
 The profiler accepts multi-line code blocks, dynamically scanning the array to tally total clock cycles and isolate the exact line number causing the primary pipeline bottleneck.
 
-Raw assembly strings are dynamically parsed into dimensional feature vectors in **O(1)** constant time:
+Raw assembly strings are dynamically parsed into compact numerical feature vectors:
+
 * `Opcode_Encoded`: Base algorithmic categorization.
 * `Category_Encoded`: Boundary mapping (Memory, Control Flow, ALU, Stack).
 * `Operand_Count`: Execution complexity scaling.
@@ -39,7 +40,7 @@ Raw assembly strings are dynamically parsed into dimensional feature vectors in 
 Following code snippets are given as reference examples for testing the tool:
 
 1. **The Optimal ALU Path (Green Telemetry)**\
-Keeps arithmetic confined to internal circuitry and utilizes hardware acceleration.
+Keeps arithmetic confined to internal circuitry and keeps computation within CPU registers and minimizes memory access.
 
 ```
 MOV AX, 0005H
