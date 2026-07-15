@@ -18,8 +18,8 @@ A context-aware regressor trained on sequential instruction data. It utilizes a 
 A localized REST API that executes ML predictions in `O(n)` time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and flags unsupported instructions with a [FATAL] diagnostic.
 * **Deterministic Shadow Decoder**: 
 The `MicrocodeInsightEngine` intercepts the contextual flow and maps the ML model's numerical latency to deterministic architectural diagnostics.
-* **Frontend Dashboard (React / Vite / Tailwind)**: 
-A stateless presentation layer that parses telemetry payloads and renders terminal-style telemetry diagnostics, instruction traces, and pipeline status indicators in real time.
+* **Frontend Dashboard (React / Vite / Tailwind)**:
+A stateless presentation layer that parses telemetry payloads and renders terminal-style diagnostics, color-coded telemetry indicators, instruction traces, and pipeline status visualizations in real time.
 
 ## Feature Engineering: The Sliding Window
 
