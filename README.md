@@ -72,13 +72,15 @@ To accurately frame the tool's capabilities for engineering environments, it ope
 git clone https://github.com/Jyotishman89/8086-Hardware-Latency-Profiler.git
 cd 8086-Hardware-Latency-Profiler
 ```
-2. Boot the Inference ServerBashcd backend
+2. Boot the Inference Server
 ```bash
+cd backend
 pip install fastapi uvicorn pydantic pandas scikit-learn xgboost joblib
 uvicorn main:app --reload
 ```
-3. Boot the UI DashboardBashcd frontend
+3. Boot the UI Dashboard
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
