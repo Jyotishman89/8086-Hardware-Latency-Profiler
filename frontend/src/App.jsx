@@ -55,7 +55,7 @@ function App() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
         <div className="lg:col-span-4 flex flex-col">
-          <div className="text-xs text-emerald-800 mb-1">&gt;_ASSEMBLER_INPUT</div>
+          <div className="text-xs text-emerald-800 mb-1">&gt;_ASSEMBLY_INPUT</div>
           <textarea 
             value={code}
             onChange={(e) => setCode(e.target.value)}
