@@ -58,6 +58,15 @@ JNE START_LOOP
 ADD AX, 0002H
 ```
 
+4. **Hardware Profile Violation (🔴 FATAL)**:
+Detects unsupported instructions, invalid opcodes, or instructions absent from the model's training distribution and rejects them from the latency estimation pipeline.
+```
+MOV AX, 0001H
+ADD AX, BX
+CPUID
+PUSH AX
+```
+
 ## Limitations & Constraints
 
 To accurately frame the tool's capabilities for engineering environments, it operates under the following constraints:
