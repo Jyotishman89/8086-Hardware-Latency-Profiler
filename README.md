@@ -33,7 +33,7 @@ Traditional profilers analyze code in isolation. This engine parses raw assembly
 
 The batch-processing API dynamically scans code blocks and isolates the exact line number causing the primary pipeline bottleneck.
 
-1. The Optimal ALU Path: Identifies highly efficient internal register arithmetic, avoiding memory bus delays.
+1. **The Optimal ALU Path**: Identifies highly efficient internal register arithmetic, avoiding memory bus delays.
 ```
 MOV AX, 0005H
 MOV BX, 000AH
@@ -41,7 +41,7 @@ ADD AX, BX
 SHL AX, 1
 ```
 
-2. BIU Memory Saturation: Evaluates contiguous memory-mapped transfers and flags heavy Bus Interface Unit (BIU) wait-states.
+2. **BIU Memory Saturation**: Evaluates contiguous memory-mapped transfers and flags heavy Bus Interface Unit (BIU) wait-states.
 ```
 PUSH AX
 PUSH BX
@@ -50,7 +50,7 @@ POP BX
 POP AX
 ```
 
-3. The Control Flow Hazard: The sliding window detects dependent sequential branches, estimating the latency penalty of a flushed instruction prefetch queue.
+3. **The Control Flow Hazard**: The sliding window detects dependent sequential branches, estimating the latency penalty of a flushed instruction prefetch queue.
 ```
 MOV AX, 0001H
 CMP CX, 0000H
