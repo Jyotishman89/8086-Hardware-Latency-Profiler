@@ -14,7 +14,7 @@ The application is structured as a strictly decoupled full-stack machine learnin
 * **Machine Learning Engine (XGBoost V3)**: 
 A context-aware regressor trained on sequential instruction data. It utilizes a 4-dimensional "Sliding Window" feature vector to predict execution latency caused by dependent sequences.
 * **High-Speed Inference API (FastAPI / Python)**: 
-A localized REST API that executes ML predictions in $O(n)$ time. It dynamically sanitizes $raw$ assembly text, handles categorical label encoding, and catches invalid opcodes with a strict fatal-error override.
+A localized REST API that executes ML predictions in `O(n)`time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and catches invalid opcodes with a strict fatal-error override.
 * **Deterministic Shadow Decoder**: The `MicrocodeInsightEngine` intercepts the contextual flow and maps the ML model's numerical latency to deterministic architectural diagnostics.
 * **Frontend Dashboard (React / Vite / Tailwind)**: 
 A stateless presentation layer utilizing dynamic Regular Expressions to parse JSON string payloads, isolating trigger keywords to render color-coded telemetry tags and pipeline heatmaps instantly.
