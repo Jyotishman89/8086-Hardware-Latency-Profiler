@@ -20,7 +20,7 @@ class MicrocodeInsightEngine:
     @staticmethod
     def analyze(prev_op, curr_op, next_op, latency):
         if prev_op == "CMP" and curr_op in ["JNE", "JZ"]:
-            return "[SPECULATIVE HAZARD] Branch evaluation forces 6-byte prefetch queue flush."
+            return "[CONTROL FLOW HAZARD] Branch evaluation forces 6-byte prefetch queue flush."
         
         if curr_op == "LOOP":
             return "[MICROCODE EFFICIENT] Fused CX decrement and branch native micro-ops."

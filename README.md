@@ -6,13 +6,13 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 
 ## Overview
 
-While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level **heuristic performance estimation**. Utilizing an XGBoost regressor trained on over 82,500 simulated contextual execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it accurately identifies architectural bottlenecks—such as memory bus saturation or speculative branch hazards—to help developers optimize code at the algorithmic level.
+While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level **heuristic performance estimation**. Utilizing an XGBoost regressor trained on over 82,500 simulated contextual execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it accurately identifies architectural bottlenecks—such as memory bus saturation or control flow hazards—to help developers optimize code at the algorithmic level.
 
 ## System Architecture
 The application is structured as a strictly decoupled full-stack machine learning pipeline:
 
 * **Machine Learning Engine (XGBoost V3)**: 
-A context-aware regressor trained on sequential instruction data. It utilizes a 4-dimensional "Sliding Window" feature vector to mathematically predict hardware friction caused by dependent sequences.
+A context-aware regressor trained on sequential instruction data. It utilizes a 4-dimensional "Sliding Window" feature vector to mathematically predict execution latency caused by dependent sequences.
 * **High-Speed Inference API (FastAPI / Python)**: 
 A localized REST API that executes ML predictions in $O(n)$ time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and catches invalid opcodes with a strict fatal-error override.
 * **Deterministic Shadow Decoder**: The `MicrocodeInsightEngine` intercepts the contextual flow and maps the ML model's numerical latency to strict, rule-based microcode facts.
@@ -21,7 +21,7 @@ A stateless presentation layer utilizing dynamic Regular Expressions to parse JS
 
 ## Feature Engineering
 
-The Sliding WindowTraditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual "memory" for each instruction in $O(1)$ constant time per line:
+The Sliding WindowTraditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual "memory" for each instruction:
 * `Prev_Enc`: Label encoding of the preceding instruction.
 * `Curr_Enc`: Label encoding of the target instruction.
 * `Next_Enc`: Label encoding of the subsequent instruction.
@@ -62,7 +62,7 @@ To accurately frame the tool's capabilities for engineering environments, it ope
 
 1. **Heuristic-Based Analysis**: This tool performs block-level latency estimation. It is not a cycle-accurate emulator and does not dynamically track historical cache-line modifications, register states, or real-time interrupt handling.
 
-2. **Contextual Feature Mapping**: While the model captures the latency penalty of standard branch hazards and memory accesses within its sliding window, it does not account for out-of-window dependencies, thermal throttling, or silicon degradation of physical vintage hardware.
+2. **Contextual Feature Mapping**: While the model captures the latency penalty of standard branch hazards and memory accesses within its sliding window, it does not account for out-of-window dependencies or thermal throttling of physical vintage hardware.
 
 3. **Instruction Scope**: Focused strictly on standard 8086 integer instruction sets. Modern AVX commands, obscure legacy interrupts, or non-aligned ISA instructions are dynamically caught and flagged with a [FATAL] hardware profile penalty.
 
