@@ -33,7 +33,7 @@ Traditional profilers analyze code in isolation. This engine parses raw assembly
 
 The batch-processing API dynamically scans code blocks and isolates the exact line number causing the primary pipeline bottleneck.
 
-1. **The Optimal ALU Path**: Identifies highly efficient internal register arithmetic, avoiding memory bus delays.
+1. **The Optimal ALU Path** : Identifies highly efficient internal register arithmetic, avoiding memory bus delays.
 ```
 MOV AX, 0005H
 MOV BX, 000AH
