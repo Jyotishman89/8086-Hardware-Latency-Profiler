@@ -64,7 +64,7 @@ POP BX
 POP AX
 ```
 
-3. The Control Flow Hazard: The sliding window detects dependent sequential branches, estimating the latency penalty of a flushed instruction prefetch queue. The diagnostic terminal highlights the offending instruction directly within the pipeline trace and surfaces the associated optimization directive automatically.
+3. The Control Flow Hazard: The sliding window detects dependent sequential branches, estimating the latency penalty of a flushed instruction prefetch queue.
 ```
 MOV AX, 0001H
 CMP CX, 0000H
