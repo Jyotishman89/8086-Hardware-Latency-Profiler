@@ -9,6 +9,7 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level **heuristic performance estimation**. Utilizing an XGBoost regressor trained on over 82,500 simulated contextual execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it accurately identifies architectural bottlenecks—such as memory bus saturation or control flow hazards—to help developers optimize code at the algorithmic level.
 
 ## System Architecture
+
 The application is structured as a decoupled full-stack machine learning pipeline:
 
 * **Machine Learning Engine (XGBoost V3)**: 
@@ -19,9 +20,9 @@ A localized REST API that executes ML predictions in `O(n)` time. It dynamically
 * **Frontend Dashboard (React / Vite / Tailwind)**: 
 A stateless presentation layer utilizing dynamic Regular Expressions to parse JSON string payloads, isolating trigger keywords to render color-coded telemetry tags and pipeline heatmaps instantly.
 
-## Feature Engineering
+## Feature Engineering: The Sliding Window
 
-The Sliding Window Traditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual "memory" for each instruction:
+Traditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual "memory" for each instruction:
 * `Prev_Enc`: Label encoding of the preceding instruction.
 * `Curr_Enc`: Label encoding of the target instruction.
 * `Next_Enc`: Label encoding of the subsequent instruction.
@@ -67,18 +68,24 @@ To accurately frame the tool's capabilities for engineering environments, it ope
 3. **Instruction Scope**: Focused strictly on standard 8086 integer instruction sets. Modern AVX commands, obscure legacy interrupts, or non-aligned ISA instructions are dynamically caught and flagged with a [FATAL] diagnostic and excluded from latency estimation.
 
 ## Local Development Setup
+
 1. Clone the repository
+
 ```bash
 git clone https://github.com/Jyotishman89/8086-Hardware-Latency-Profiler.git
 cd 8086-Hardware-Latency-Profiler
 ```
+
 2. Boot the Inference Server
+
 ```bash
 cd backend
 pip install fastapi uvicorn pydantic pandas scikit-learn xgboost joblib
 uvicorn main:app --reload
 ```
+
 3. Boot the UI Dashboard
+
 ```bash
 cd frontend
 npm install
