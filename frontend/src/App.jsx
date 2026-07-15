@@ -48,8 +48,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black text-emerald-500 p-4 font-mono">
-      <div className="border-b-2 border-emerald-900 pb-2 mb-4 flex justify-between">
-        <span className="text-sm font-bold tracking-widest">[HARDWARE_PROFILER:8086_PROFILER_V3]</span>
+      <div className="border-b-2 border-emerald-900 pb-3 mb-4 flex justify-between items-end">
+        <div>
+          <span className="text-sm font-bold tracking-widest block">8086_PROFILER_V3</span>
+          <span className="text-xs text-emerald-700 block mt-1">HARDWARE_PROFILER</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
