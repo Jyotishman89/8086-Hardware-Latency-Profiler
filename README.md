@@ -9,7 +9,7 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level **heuristic performance estimation**. Utilizing an XGBoost regressor trained on over 82,500 simulated contextual execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it accurately identifies architectural bottlenecks—such as memory bus saturation or control flow hazards—to help developers optimize code at the algorithmic level.
 
 ## System Architecture
-The application is structured as a strictly decoupled full-stack machine learning pipeline:
+The application is structured as a decoupled full-stack machine learning pipeline:
 
 * **Machine Learning Engine (XGBoost V3)**: 
 A context-aware regressor trained on sequential instruction data. It utilizes a 4-dimensional "Sliding Window" feature vector to predict execution latency caused by dependent sequences.
@@ -21,7 +21,7 @@ A stateless presentation layer utilizing dynamic Regular Expressions to parse JS
 
 ## Feature Engineering
 
-The Sliding WindowTraditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual "memory" for each instruction:
+The Sliding Window Traditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual "memory" for each instruction:
 * `Prev_Enc`: Label encoding of the preceding instruction.
 * `Curr_Enc`: Label encoding of the target instruction.
 * `Next_Enc`: Label encoding of the subsequent instruction.
@@ -64,7 +64,7 @@ To accurately frame the tool's capabilities for engineering environments, it ope
 
 2. **Contextual Feature Mapping**: While the model captures the latency penalty of standard branch hazards and memory accesses within its sliding window, it does not account for out-of-window dependencies or hardware-specific timing variations of physical implementations.
 
-3. **Instruction Scope**: Focused strictly on standard 8086 integer instruction sets. Modern AVX commands, obscure legacy interrupts, or non-aligned ISA instructions are dynamically caught and flagged with a [FATAL] hardware profile penalty.
+3. **Instruction Scope**: Focused strictly on standard 8086 integer instruction sets. Modern AVX commands, obscure legacy interrupts, or non-aligned ISA instructions are dynamically caught and flagged with a [FATAL] diagnostic and excluded from latency estimation.
 
 ## Local Development Setup
 1. Clone the repository
