@@ -89,10 +89,82 @@ function App() {
 
           {results && results.insight && (
             <div className="border-2 border-emerald-900 p-4 bg-emerald-950/20">
-              <div className="text-[10px] text-emerald-800 mb-2">OPTIMIZATION_DIRECTIVE</div>
+              <div className="flex items-center gap-3 mb-3 border-b border-emerald-900/50 pb-2">
+                <div className="text-[10px] text-emerald-800">OPTIMIZATION_DIRECTIVE</div>
+                <div className={`text-[10px] font-bold text-black px-2 py-0.5 ${
+                  telemetryTag.includes("HAZARD") || telemetryTag.includes("FATAL") ? "bg-red-600" : 
+                  (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS")) ? "bg-amber-600" : "bg-emerald-600"
+                }`}>
+                  [{telemetryTag}]
+                </div>
+              </div>
               <div className="text-sm text-emerald-300 leading-relaxed">
                 {results.insight}
               </div>
+
+              {telemetryTag.includes("FATAL") && (
+                <div className="border border-red-900/30 p-2 bg-black mt-4">
+                  <div className="text-[8px] text-red-800 mb-2 tracking-widest">SYSTEM_INTERRUPT_CONTROLLER</div>
+                  <svg className="w-full h-12" viewBox="0 0 400 40" fill="none" stroke="currentColor">
+                    <rect x="50" y="10" width="80" height="20" className="stroke-red-900 fill-red-950/30" />
+                    <text x="90" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">ILLEGAL_OP</text>
+                    
+                    <rect x="270" y="10" width="85" height="20" className="stroke-red-900 fill-red-950/30" />
+                    <text x="310" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">ABORTED</text>
+                    
+                    <path d="M 130 20 L 270 20" className="stroke-red-600" strokeWidth="2" strokeDasharray="6 2" />
+                    <circle cx="200" cy="20" r="8" className="fill-red-900 stroke-red-500" strokeWidth="2" />
+                    <text x="200" y="24" className="fill-black text-[12px] font-bold" textAnchor="middle" stroke="none">!</text>
+                    <text x="200" y="8" className="fill-red-500 text-[8px]" textAnchor="middle" stroke="none">EXCEPTION_HANDLER</text>
+                  </svg>
+                </div>
+              )}
+              
+              {telemetryTag.includes("HAZARD") && (
+                <div className="border border-red-900/30 p-2 bg-black mt-4">
+                  <div className="text-[8px] text-red-800 mb-2 tracking-widest">PIPELINE_PREFETCH_QUEUE (6-BYTE)</div>
+                  <svg className="w-full h-12" viewBox="0 0 450 40" fill="none" stroke="currentColor">
+                    <rect x="10" y="10" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
+                    <text x="50" y="24" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
+                    <rect x="105" y="10" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
+                    <text x="145" y="24" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
+                    <rect x="200" y="10" width="125" height="20" className="stroke-red-900 fill-red-950/30" strokeWidth="2" />
+                    <text x="262.5" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">PREFETCH REFILL (16T)</text>
+                    <rect x="340" y="10" width="80" height="20" className="stroke-emerald-500" strokeWidth="2" />
+                    <text x="380" y="24" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">NEW FETCH</text>
+                    <path d="M 90 20 L 105 20 M 185 20 L 200 20 M 325 20 L 340 20" className="stroke-emerald-800" strokeWidth="2" />
+                  </svg>
+                </div>
+              )}
+
+              {(telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS")) && (
+                <div className="border border-amber-900/30 p-2 bg-black mt-4">
+                  <div className="text-[8px] text-amber-800 mb-2 tracking-widest">BUS_INTERFACE_UNIT (BIU_IO)</div>
+                  <svg className="w-full h-12" viewBox="0 0 400 40" fill="none" stroke="currentColor">
+                    <rect x="50" y="10" width="80" height="20" className="stroke-emerald-900" />
+                    <text x="90" y="24" className="fill-emerald-700 text-[10px]" textAnchor="middle" stroke="none">EU</text>
+                    <rect x="270" y="10" width="80" height="20" className="stroke-amber-600 fill-amber-950/30" strokeWidth="2" />
+                    <text x="310" y="24" className="fill-amber-500 text-[10px] font-bold" textAnchor="middle" stroke="none">RAM</text>
+                    <path d="M 130 18 L 270 18 M 270 22 L 130 22" className="stroke-amber-700" strokeWidth="2" />
+                    <circle cx="200" cy="20" r="6" className="fill-amber-500 stroke-none" />
+                    <text x="200" y="12" className="fill-amber-500 text-[8px]" textAnchor="middle" stroke="none">BUS WAIT-STATE</text>
+                  </svg>
+                </div>
+              )}
+
+              {(telemetryTag.includes("OPTIMAL") || telemetryTag.includes("STANDARD")) && (
+                <div className="border border-emerald-900/50 p-2 bg-black mt-4">
+                  <div className="text-[8px] text-emerald-700 mb-2 tracking-widest">EXECUTION_UNIT (NATIVE_SILICON)</div>
+                  <svg className="w-full h-12" viewBox="0 0 400 40" fill="none" stroke="currentColor">
+                    <rect x="50" y="10" width="80" height="20" className="stroke-emerald-600 fill-emerald-950/30" />
+                    <text x="90" y="24" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">REGISTERS</text>
+                    <rect x="270" y="10" width="80" height="20" className="stroke-emerald-600 fill-emerald-950/30" />
+                    <text x="310" y="24" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">ALU CORE</text>
+                    <path d="M 130 15 L 270 15 M 270 25 L 130 25" className="stroke-emerald-400" strokeWidth="2" strokeDasharray="4 2" />
+                    <text x="200" y="12" className="fill-emerald-500 text-[8px]" textAnchor="middle" stroke="none">&lt; FAST PATH &gt;</text>
+                  </svg>
+                </div>
+              )}
             </div>
           )}
 
