@@ -6,7 +6,7 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 
 ## Overview
 
-While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level **heuristic performance estimation**. Utilizing an XGBoost regressor trained on over 82,500 instruction-level contextual observations derived from 15,000 simulated execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it accurately identifies architectural bottlenecks—such as memory bus saturation or control flow hazards—to help developers optimize code at the algorithmic level. The model achieves a **95.31% R² score** with a Mean Absolute Error (MAE) of **1.02 cycles**.
+While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides a high-level **heuristic performance estimation**. Utilizing an XGBoost regressor trained on over 82,500 contextual instruction samples derived from 15,000 simulated execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it estimates potential architectural bottlenecks—such as memory bus saturation or control flow hazards—to help developers optimize code at the algorithmic level. The model achieves a **95.31% R² score** with a Mean Absolute Error (MAE) of **1.02 cycles**.
 
 ## System Architecture
 
@@ -17,7 +17,7 @@ A context-aware regressor trained on sequential instruction data. It utilizes a 
 * **High-Speed Inference API (FastAPI / Python)**: 
 A localized REST API that executes ML predictions in `O(n)` time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and flags unsupported instructions with a [FATAL] diagnostic.
 * **Deterministic Shadow Decoder**: 
-The `MicrocodeInsightEngine` intercepts the contextual flow and maps the ML model's numerical latency to deterministic architectural diagnostics.
+The `MicrocodeInsightEngine` applies deterministic architectural heuristics to complement the ML model's latency estimates with interpretable telemetry diagnostics.
 * **Frontend Dashboard (React / Vite / Tailwind)**:
 A stateless presentation layer that parses telemetry payloads and renders terminal-style diagnostics, color-coded telemetry indicators, instruction traces, and pipeline status visualizations in real time.
 
@@ -50,7 +50,7 @@ POP BX
 POP AX
 ```
 
-3. **The Control Flow Hazard (🔴 CONTROL FLOW HAZARD)**: The sliding window detects dependent sequential branches, estimating the latency penalty of a flushed instruction prefetch queue.
+3. **The Control Flow Hazard (🔴 CONTROL FLOW HAZARD)**: The sliding window identifies branch-heavy instruction patterns associated with instruction prefetch penalties and control flow disruption.
 ```
 MOV AX, 0001H
 CMP CX, 0000H
@@ -73,9 +73,12 @@ To accurately frame the tool's capabilities for engineering environments, it ope
 
 1. **Heuristic-Based Analysis**: This tool performs block-level latency estimation. It is not a cycle-accurate emulator and does not dynamically track historical cache-line modifications, register states, or real-time interrupt handling.
 
-2. **Contextual Feature Mapping**: While the model captures the latency penalty of standard branch hazards and memory accesses within its sliding window, it does not account for out-of-window dependencies or hardware-specific timing variations of physical implementations.
+2. **Synthetic Training Distribution**:
+Predictions are derived from synthetic instruction timing data and deterministic architectural heuristics rather than measurements collected from physical 8086 hardware.
 
-3. **Instruction Scope**: Focused strictly on standard 8086 integer instruction sets. Modern AVX commands, obscure legacy interrupts, or non-aligned ISA instructions are dynamically caught and flagged with a [FATAL] diagnostic and excluded from latency estimation.
+3. **Contextual Feature Mapping**: While the model captures the latency penalty of standard branch hazards and memory accesses within its sliding window, it does not account for out-of-window dependencies or hardware-specific timing variations of physical implementations.
+
+4. **Instruction Scope**: Focused strictly on standard 8086 integer instruction sets. Modern AVX commands, obscure legacy interrupts, or non-aligned ISA instructions are dynamically caught and flagged with a [FATAL] diagnostic and excluded from latency estimation.
 
 ## Local Development Setup
 1. Clone the repository
