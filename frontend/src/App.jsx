@@ -80,7 +80,7 @@ function App() {
               <div className="text-4xl">{results ? results.total_t_states : "0000"}</div>
             </div>
             <div className="border-2 border-emerald-900 p-4">
-              <div className="text-[10px] text-emerald-800 mb-2">BOTTLENECK_OPCODE</div>
+              <div className="text-[10px] text-emerald-800 mb-2">PRIMARY_BOTTLENECK</div>
               <div className={`text-xl uppercase font-bold ${
                 telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500" : "text-emerald-400"
               }`}>
@@ -91,7 +91,7 @@ function App() {
 
           {results && results.shap_importances && results.shap_importances.length > 0 && (
             <div className="border-2 border-emerald-900 p-4 bg-black">
-              <div className="text-[10px] text-emerald-800 mb-2 tracking-widest">SHAP_HEURISTIC_WEIGHTS (XGB_REGRESSOR)</div>
+              <div className="text-[10px] text-emerald-800 mb-2 tracking-widest">SHAP_HEURISTIC_WEIGHTS</div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {results.shap_importances.map((shapStr, idx) => {
                   const parts = shapStr.split(' from ');
@@ -119,7 +119,7 @@ function App() {
           {results && results.insight && (
             <div className="border-2 border-emerald-900 p-4 bg-emerald-950/20">
               <div className="flex items-center gap-3 mb-3 border-b border-emerald-900/50 pb-2">
-                <div className="text-[10px] text-emerald-800">OPTIMIZATION_DIRECTIVE (XGB_CLASSIFIER)</div>
+                <div className="text-[10px] text-emerald-800">OPTIMIZATION_DIRECTIVE</div>
                 <div className={`text-[10px] font-bold px-2 py-0.5 border ${
                   telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500 bg-red-950/30 border-red-900/50" : 
                   (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS") || telemetryTag.includes("HEAVY")) ? "text-amber-500 bg-amber-950/30 border-amber-900/50" : 
@@ -273,11 +273,11 @@ function App() {
           )}
             
           <div className="border-2 border-emerald-900 flex-grow">
-            <div className="bg-emerald-900 text-black px-2 py-1 text-xs font-bold">MEMORY_TRACE_BUFFER</div>
+            <div className="bg-emerald-900 text-black px-2 py-1 text-xs font-bold">INSTRUCTION_PIPELINE_TRACE</div>
             <div className="p-2 text-xs grid grid-cols-12 gap-2 text-emerald-700 border-b border-emerald-950 mb-2">
               <div className="col-span-2">LINE</div>
-              <div className="col-span-6">OPCODE</div>
-              <div className="col-span-4 text-right">CYCLES</div>
+              <div className="col-span-6">INSTRUCTION</div>
+              <div className="col-span-4 text-right">CYCLES (T)</div>
             </div>
             <div className="px-2 pb-2">
               {results && results.breakdown.map((item, idx) => (
