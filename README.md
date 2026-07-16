@@ -6,18 +6,16 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 
 ## Overview
 
-While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides high-level architectural latency estimation. Utilizing an XGBoost regressor trained on over 82,500 contextual instruction samples derived from 15,000 simulated execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it estimates dominant architectural bottlenecks—such as memory bus pressure, microcoded arithmetic occupancy, or control flow hazards—to help developers optimize code at the algorithmic level. The model achieves a **95.31% R² score** with a **Mean Absolute Error (MAE) of 1.02 cycles**.
+While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides high-level architectural latency estimation. Utilizing a dual-model XGBoost inference pipeline trained on around 25,000 contextual instruction samples generated from synthetic 8086 execution patterns, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining a dual-model machine learning pipeline with deterministic architectural heuristics (`MicrocodeInsightEngine`), the system estimates execution latency and classifies dominant architectural bottlenecks such as memory pressure, microcoded arithmetic occupancy, and control flow hazards.
 
 ## System Architecture
 
 The application is structured as a decoupled full-stack machine learning pipeline:
 
-* **Machine Learning Engine (XGBoost V4)**:
-A context-aware regressor trained on sequential instruction data. It utilizes a 4-dimensional "Sliding Window" feature vector to predict execution latency caused by dependent instruction sequences.
-* **High-Speed Inference API (FastAPI / Python)**:
+* * **Dual-Model Machine Learning Engine (XGBoost V4)**: A context-aware inference pipeline consisting of an `XGBRegressor` for latency estimation and an `XGBClassifier` for architectural bottleneck classification. Both models operate on a shared 14-dimensional contextual feature vector derived from neighboring instructions and operand-level execution characteristics.
+* **High-Speed Inference API (FastAPI / Python)**: 
 A localized REST API that executes ML predictions in `O(n)` time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and flags unsupported instructions with a [FATAL] diagnostic.
-* **Deterministic Shadow Decoder**:
-The `MicrocodeInsightEngine` applies deterministic architectural heuristics to complement the ML model's latency estimates with interpretable SHAP telemetry diagnostics and dominant bottleneck classification.
+* * **Deterministic Shadow Decoder**: The `MicrocodeInsightEngine` complements ML predictions with architecture-aware telemetry explanations, visualization routing, and optimization directives.
 * **Frontend Dashboard (React / Vite / Tailwind)**:
 A stateless presentation layer that parses telemetry payloads and renders terminal-style diagnostics, color-coded telemetry indicators, instruction traces, and architecture-inspired pipeline visualizations in real time.
 
@@ -25,10 +23,11 @@ A stateless presentation layer that parses telemetry payloads and renders termin
 
 Traditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual awareness of neighboring instructions:
 
-* `Prev_Enc`: Label encoding of the preceding instruction.
-* `Curr_Enc`: Label encoding of the target instruction.
-* `Next_Enc`: Label encoding of the subsequent instruction.
-* `Category`: Boundary mapping (Memory, Control Flow, ALU, Stack).
+* Contextual opcode window (`Prev2`, `Prev1`, `Curr`, `Next1`, `Next2`)
+* Operand encoding (`Op1`, `Op2`)
+* Memory activity flags (`is_mem`, `mem_read`, `mem_write`)
+* Architectural execution flags (`is_branch`, `is_alu`, `has_imm`)
+* Register dependency detection (`reg_dependency`)
 
 ## Interactive Pipeline Diagnostics
 
