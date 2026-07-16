@@ -12,10 +12,10 @@ While cycle-accurate CPU emulators attempt to replicate every micro-state of a p
 
 The application is structured as a decoupled full-stack machine learning pipeline:
 
-* * **Dual-Model Machine Learning Engine (XGBoost V4)**: A context-aware inference pipeline consisting of an `XGBRegressor` for latency estimation and an `XGBClassifier` for architectural bottleneck classification. Both models operate on a shared 14-dimensional contextual feature vector derived from neighboring instructions and operand-level execution characteristics.
+* **Dual-Model Machine Learning Engine (XGBoost V4)**: A context-aware inference pipeline consisting of an `XGBRegressor` for latency estimation and an `XGBClassifier` for architectural bottleneck classification. Both models operate on a shared 14-dimensional contextual feature vector derived from neighboring instructions and operand-level execution characteristics.
 * **High-Speed Inference API (FastAPI / Python)**: 
 A localized REST API that executes ML predictions in `O(n)` time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and flags unsupported instructions with a [FATAL] diagnostic.
-* * **Deterministic Shadow Decoder**: The `MicrocodeInsightEngine` complements ML predictions with architecture-aware telemetry explanations, visualization routing, and optimization directives.
+* **Deterministic Shadow Decoder**: The `MicrocodeInsightEngine` complements ML predictions with architecture-aware telemetry explanations, visualization routing, and optimization directives.
 * **Frontend Dashboard (React / Vite / Tailwind)**:
 A stateless presentation layer that parses telemetry payloads and renders terminal-style diagnostics, color-coded telemetry indicators, instruction traces, and architecture-inspired pipeline visualizations in real time.
 
