@@ -210,7 +210,7 @@ function App() {
                     <rect x="105" y="10" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
                     <text x="145" y="24" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
                     <rect x="200" y="10" width="125" height="20" className="stroke-red-900 fill-red-950/30" strokeWidth="2" />
-                    <text x="262.5" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">PREFETCH REFILL (16T)</text>
+                    <text x="262.5" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">PREFETCH REFILL</text>
                     <rect x="340" y="10" width="80" height="20" className="stroke-emerald-500" strokeWidth="2" />
                     <text x="380" y="24" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">NEW FETCH</text>
                     <path d="M 90 20 L 105 20 M 185 20 L 200 20 M 325 20 L 340 20" className="stroke-emerald-800" strokeWidth="2" />
