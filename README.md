@@ -34,7 +34,7 @@ Traditional profilers analyze code in isolation. This engine parses raw assembly
 
 The batch-processing API dynamically scans code blocks and isolates the exact line number causing the primary pipeline bottleneck.
 
-1. **The Optimal ALU Path (🟢 ALU OPTIMAL)**: Identifies highly efficient internal register arithmetic with minimal architectural hazards.
+1. **Standard Execution (🟢 STANDARD EXECUTION)**: Identifies sequential register-oriented instruction streams that execute efficiently through normal BIU/EU overlap without significant memory pressure or control flow disruption.
 ```
 MOV AX, 0005H
 MOV BX, 000AH
