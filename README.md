@@ -6,7 +6,7 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 
 ## Overview
 
-While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides high-level architectural latency estimation. Utilizing an XGBoost regressor trained on over 82,500 contextual instruction samples derived from 15,000 simulated execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (MicrocodeInsightEngine), it estimates dominant architectural bottlenecks—such as memory bus pressure, microcoded arithmetic occupancy, or control flow hazards—to help developers optimize code at the algorithmic level. The model achieves a **95.31% R² score** with a **Mean Absolute Error (MAE) of 1.02 cycles**.
+While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides high-level architectural latency estimation. Utilizing an XGBoost regressor trained on over 82,500 contextual instruction samples derived from 15,000 simulated execution sequences, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining sequence-based machine learning with a deterministic Shadow Decoder (`MicrocodeInsightEngine`), it estimates dominant architectural bottlenecks—such as memory bus pressure, microcoded arithmetic occupancy, or control flow hazards—to help developers optimize code at the algorithmic level. The model achieves a **95.31% R² score** with a **Mean Absolute Error (MAE) of 1.02 cycles**.
 
 ## System Architecture
 
@@ -17,7 +17,7 @@ A context-aware regressor trained on sequential instruction data. It utilizes a 
 * **High-Speed Inference API (FastAPI / Python)**:
 A localized REST API that executes ML predictions in `O(n)` time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and flags unsupported instructions with a [FATAL] diagnostic.
 * **Deterministic Shadow Decoder**:
-The MicrocodeInsightEngine applies deterministic architectural heuristics to complement the ML model's latency estimates with interpretable SHAP telemetry diagnostics and dominant bottleneck classification.
+The `MicrocodeInsightEngine` applies deterministic architectural heuristics to complement the ML model's latency estimates with interpretable SHAP telemetry diagnostics and dominant bottleneck classification.
 * **Frontend Dashboard (React / Vite / Tailwind)**:
 A stateless presentation layer that parses telemetry payloads and renders terminal-style diagnostics, color-coded telemetry indicators, instruction traces, and architecture-inspired pipeline visualizations in real time.
 
