@@ -122,7 +122,7 @@ function App() {
                 <div className="text-[10px] text-emerald-800">OPTIMIZATION_DIRECTIVE</div>
                 <div className={`text-[10px] font-bold px-2 py-0.5 border ${
                   telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500 bg-red-950/30 border-red-900/50" : 
-                  (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS") || telemetryTag.includes("HEAVY")) ? "text-amber-500 bg-amber-950/30 border-amber-900/50" : 
+                  (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS") || telemetryTag.includes("MICROCODED")) ? "text-amber-500 bg-amber-950/30 border-amber-900/50" : 
                   telemetryTag.includes("STACK") ? "text-indigo-400 bg-indigo-950/30 border-indigo-900/50" :
                   "text-emerald-500 bg-emerald-950/30 border-emerald-900/50"
                 }`}>
@@ -142,7 +142,7 @@ function App() {
                     <rect x="160" y="10" width="60" height="20" className="stroke-red-600 fill-red-950/50" strokeWidth="2"/>
                     <text x="190" y="24" className="fill-red-400 text-[10px] font-bold" textAnchor="middle" stroke="none">INT 6</text>
                     <rect x="270" y="10" width="170" height="20" className="stroke-red-900 fill-red-950/30" />
-                    <text x="355" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">ISA VALIDATION FAILURE</text>
+                    <text x="355" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">MODEL COVERAGE FAILURE</text>
                     <path d="M 110 20 L 160 20 M 220 20 L 270 20" className="stroke-red-600" strokeWidth="2" strokeDasharray="6 4" />
                     <circle cx="135" cy="20" r="6" className="fill-red-900 stroke-red-500" strokeWidth="1" />
                     <text x="135" y="23" className="fill-black text-[10px] font-bold" textAnchor="middle" stroke="none">!</text>
@@ -176,7 +176,7 @@ function App() {
                 </div>
               )}
 
-              {telemetryTag.includes("HEAVY") && (
+              {telemetryTag.includes("MICROCODED") && (
                 <div className="border border-amber-900/30 p-2 bg-black mt-4">
                   <div className="text-[8px] text-amber-800 mb-2 tracking-widest">MICROCODE_SEQUENCER (COMPLEX_ALU_LOOP)</div>
                   <svg className="w-full h-14" viewBox="0 0 450 50" fill="none" stroke="currentColor">
@@ -201,26 +201,32 @@ function App() {
                 </div>
               )}
 
-              {telemetryTag.includes("HAZARD") && (
+             {telemetryTag.includes("HAZARD") && (
                 <div className="border border-red-900/30 p-2 bg-black mt-4">
                   <div className="text-[8px] text-red-800 mb-2 tracking-widest">PIPELINE_PREFETCH_QUEUE (6-BYTE)</div>
-                  <svg className="w-full h-12" viewBox="0 0 450 40" fill="none" stroke="currentColor">
-                    <rect x="10" y="10" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
-                    <text x="50" y="24" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
-                    <rect x="105" y="10" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
-                    <text x="145" y="24" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
-                    <rect x="200" y="10" width="125" height="20" className="stroke-red-900 fill-red-950/30" strokeWidth="2" />
-                    <text x="262.5" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">PREFETCH REFILL</text>
-                    <rect x="340" y="10" width="80" height="20" className="stroke-emerald-500" strokeWidth="2" />
-                    <text x="380" y="24" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">NEW FETCH</text>
-                    <path d="M 90 20 L 105 20 M 185 20 L 200 20 M 325 20 L 340 20" className="stroke-emerald-800" strokeWidth="2" />
+                  <svg className="w-full h-14" viewBox="0 0 450 50" fill="none" stroke="currentColor">
+                    <text x="100" y="10" className="fill-red-500 text-[8px] font-bold tracking-widest" textAnchor="middle" stroke="none">6-BYTE QUEUE INVALIDATED</text>
+                    
+                    <rect x="10" y="15" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
+                    <text x="50" y="29" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
+                    
+                    <rect x="105" y="15" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
+                    <text x="145" y="29" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
+                    
+                    <rect x="200" y="15" width="125" height="20" className="stroke-red-900 fill-red-950/30" strokeWidth="2" />
+                    <text x="262.5" y="29" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">PREFETCH REFILL</text>
+                    
+                    <rect x="340" y="15" width="80" height="20" className="stroke-emerald-500" strokeWidth="2" />
+                    <text x="380" y="29" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">NEW FETCH</text>
+                    
+                    <path d="M 90 25 L 105 25 M 185 25 L 200 25 M 325 25 L 340 25" className="stroke-emerald-800" strokeWidth="2" />
                   </svg>
                 </div>
               )}
 
               {telemetryTag.includes("STACK") && (
                 <div className="border border-indigo-900/30 p-2 bg-black mt-4">
-                  <div className="text-[8px] text-indigo-800 mb-2 tracking-widest">DEDICATED_STACK_ENGINE (SS:SP_HARDWARE)</div>
+                  <div className="text-[8px] text-indigo-800 mb-2 tracking-widest">STACK_DATA_PATH (SS:SP_HARDWARE)</div>
                   <svg className="w-full h-12" viewBox="0 0 450 40" fill="none" stroke="currentColor">
                     <rect x="50" y="10" width="90" height="20" className="stroke-indigo-600 fill-indigo-950/30" />
                     <text x="95" y="24" className="fill-indigo-500 text-[10px] font-bold" textAnchor="middle" stroke="none">SP REG (±2)</text>
@@ -241,13 +247,20 @@ function App() {
                 <div className="border border-amber-900/30 p-2 bg-black mt-4">
                   <div className="text-[8px] text-amber-800 mb-2 tracking-widest">BUS_INTERFACE_UNIT (BIU_IO)</div>
                   <svg className="w-full h-12" viewBox="0 0 450 40" fill="none" stroke="currentColor">
-                    <rect x="50" y="10" width="80" height="20" className="stroke-emerald-900" />
-                    <text x="90" y="24" className="fill-emerald-700 text-[10px]" textAnchor="middle" stroke="none">CPU ALU</text>
-                    <rect x="270" y="10" width="80" height="20" className="stroke-amber-600 fill-amber-950/30" strokeWidth="2" />
-                    <text x="310" y="24" className="fill-amber-500 text-[10px] font-bold" textAnchor="middle" stroke="none">EXTERNAL RAM</text>
-                    <path d="M 130 18 L 270 18 M 270 22 L 130 22" className="stroke-amber-700" strokeWidth="2" />
-                    <circle cx="200" cy="20" r="6" className="fill-amber-500 stroke-none" />
-                    <text x="200" y="12" className="fill-amber-500 text-[8px]" textAnchor="middle" stroke="none">BUS WAIT-STATE</text>
+                    <rect x="20" y="10" width="60" height="20" className="stroke-emerald-900 fill-emerald-950/30" />
+                    <text x="50" y="24" className="fill-emerald-700 text-[10px]" textAnchor="middle" stroke="none">CPU ALU</text>
+
+                    <rect x="110" y="10" width="60" height="20" className="stroke-emerald-700 fill-emerald-950/30" />
+                    <text x="140" y="24" className="fill-emerald-500 text-[10px]" textAnchor="middle" stroke="none">BIU</text>
+
+                    <rect x="270" y="10" width="100" height="20" className="stroke-amber-600 fill-amber-950/30" strokeWidth="2" />
+                    <text x="320" y="24" className="fill-amber-500 text-[10px] font-bold" textAnchor="middle" stroke="none">EXTERNAL RAM</text>
+
+                    <path d="M 80 20 L 110 20" className="stroke-emerald-800" strokeWidth="2" />
+                    <path d="M 170 18 L 270 18 M 270 22 L 170 22" className="stroke-amber-700" strokeWidth="2" />
+
+                    <circle cx="220" cy="20" r="6" className="fill-amber-500 stroke-none" />
+                    <text x="220" y="12" className="fill-amber-500 text-[8px]" textAnchor="middle" stroke="none">WAIT STATE</text>
                   </svg>
                 </div>
               )}
