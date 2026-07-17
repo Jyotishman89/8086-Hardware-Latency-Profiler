@@ -152,8 +152,7 @@ MUL BX
 DIV CX
 ```
 
-7. **🔴 FATAL**: Unsupported instructions or instructions absent from the training distribution are dynamically rejected. Supported instructions currently include MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, LEA, and common conditional branch instructions used during training. Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.
-   
+7. **🔴 FATAL**: Unsupported instructions or instructions absent from the training distribution are dynamically rejected.   
 ```
 MOV AX, 0001H
 ADD AX, BX
@@ -161,6 +160,7 @@ CPUID
 PUSH AX
 ```
 
+*Supported instructions currently include MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, LEA, and common conditional branch instructions used during training.*\
 *Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.*\
 *`INC` and `DEC` are currently unsupported by the training distribution and are treated as invalid opcodes until included in future model revisions.*
 
