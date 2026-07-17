@@ -160,8 +160,8 @@ CPUID
 PUSH AX
 ```
 
-* *Supported instructions currently include MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, LEA, and common conditional branch instructions used during training.*\
-* *Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.*\
+* *Supported instructions currently include MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, LEA, and common conditional branch instructions used during training.*
+* *Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.*
 * *`INC` and `DEC` are currently unsupported by the training distribution and are treated as invalid opcodes until included in future model revisions.*
 
 
