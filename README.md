@@ -10,7 +10,9 @@ Traditional cycle-accurate emulators attempt to reproduce every internal state t
 
 The profiler evaluates multi-line 8086 assembly blocks as contextual execution windows rather than isolated instructions. A dual-model XGBoost inference pipeline predicts total execution latency and isolates the dominant architectural bottleneck responsible for throughput degradation.
 
-The inference engine is augmented by a deterministic shadow decoder (`MicrocodeInsightEngine`) that converts model outputs into architecture-inspired telemetry including bottleneck classification, optimization directives, instruction pipeline traces, SHAP-style feature contributions, and hardware visualization diagrams.
+The inference pipeline is augmented by a deterministic post-inference reasoning layer, internally referred to as the `MicrocodeInsightEngine`, which transforms raw machine learning predictions into architecture-inspired telemetry. This layer normalizes bottleneck classifications, generates optimization directives, attributes dominant latency contributors through SHAP-based feature analysis, and routes hardware-specific visualizations and execution narratives to the frontend dashboard.
+
+By combining statistical inference with deterministic architectural heuristics, the system produces interpretable diagnostics that resemble traditional hardware profiling tools while preserving the flexibility and generalization capabilities of machine learning models.
 
 The result is a retro terminal-style diagnostic system that explains *why* a workload is slow rather than merely predicting how long it will take.
 
@@ -18,7 +20,7 @@ The result is a retro terminal-style diagnostic system that explains *why* a wor
 
 The application is structured as a decoupled full-stack machine learning pipeline:
 
-### Dual-Model Machine Learning Engine (XGBoost V5)
+### Dual-Model Machine Learning Engine (XGBoost V4)
 
 A context-aware inference pipeline consisting of:
 
@@ -39,17 +41,20 @@ A localized REST inference server responsible for:
 
 Inference executes in linear time relative to instruction count.
 
-### Deterministic Shadow Decoder (`MicrocodeInsightEngine`)
+### Deterministic Post-Inference Reasoning Layer (`MicrocodeInsightEngine`)
 
-The shadow decoder complements ML predictions with architecture-aware reasoning layers:
+The `MicrocodeInsightEngine` acts as an architecture-aware interpretation layer that operates after model inference. Rather than participating directly in latency prediction, it converts numerical model outputs into human-readable hardware diagnostics inspired by the internal behavior of the 8086 processor.
 
-- Optimization directives
-- SHAP-inspired feature telemetry
+Responsibilities include:
+
+- Bottleneck normalization and classification refinement
+- Optimization directive generation
+- SHAP-based feature telemetry extraction
 - Hardware visualization routing
-- Bottleneck explanations
-- Architectural narrative generation
+- Instruction pipeline trace generation
+- Architectural explanation and narrative synthesis
 
-This layer transforms numerical predictions into interpretable hardware diagnostics.
+This reasoning layer bridges the gap between statistical model predictions and low-level architectural intuition, enabling the profiler to present execution characteristics in a form familiar to systems programmers and computer architecture engineers.
 
 ### Frontend Dashboard (React + Vite + Tailwind)
 
@@ -105,9 +110,9 @@ The batch-processing API dynamically scans code blocks and isolates the exact li
 1.🟢 ALU OPTIMAL: Lightweight register-oriented instruction streams execute entirely within the Execution Unit without meaningful contention from memory access, stack traffic, branch penalties, or microcoded operations.
 ```
 MOV AX,0001H
-CMP CX,0000H
-JNE START_LOOP
-ADD AX,0002H
+MOV BX,0002H
+MOV CX,0003H
+MOV DX,0004H
 ```
 
 2. 🟢 SEQUENTIAL EXECUTION: Sequential register-oriented instruction streams benefit from the 8086 Bus Interface Unit and Execution Unit overlap mechanism, allowing efficient utilization of the processor prefetch queue.
@@ -147,7 +152,7 @@ MUL BX
 DIV CX
 ```
 
-7. **🔴 FATAL**: Unsupported instructions or instructions absent from the training distribution are dynamically rejected. Supported Instructions: MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, conditional jumps, LEA and basic integer arithmetic. Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.
+7. **🔴 FATAL**: Unsupported instructions or instructions absent from the training distribution are dynamically rejected. Supported instructions currently include MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, LEA, and common conditional branch instructions used during training. Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.
    
 ```
 MOV AX, 0001H
@@ -155,6 +160,9 @@ ADD AX, BX
 CPUID
 PUSH AX
 ```
+
+* **Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes*
+* **`INC` and `DEC` are currently unsupported by the training distribution and are treated as invalid opcodes until included in future model revisions.*
 
 
 ## Limitations & Constraints
