@@ -6,59 +6,149 @@ This project bridges low-level computer architecture with modern AI pipelines, p
 
 ## Overview
 
-While cycle-accurate CPU emulators attempt to replicate every micro-state of a processor, this tool provides high-level architectural latency estimation. Utilizing a dual-model XGBoost inference pipeline trained on around 25,000 contextual instruction samples generated from synthetic 8086 execution patterns, the engine evaluates multi-line assembly blocks as a contextual sliding window. By combining a dual-model machine learning pipeline with deterministic architectural heuristics (`MicrocodeInsightEngine`), the system estimates execution latency and classifies dominant architectural bottlenecks such as memory pressure, microcoded arithmetic occupancy, and control flow hazards.
+Traditional cycle-accurate emulators attempt to reproduce every internal state transition of a processor. This project instead performs architecture-aware latency estimation by combining machine learning inference with deterministic hardware heuristics.
+
+The profiler evaluates multi-line 8086 assembly blocks as contextual execution windows rather than isolated instructions. A dual-model XGBoost inference pipeline predicts total execution latency and isolates the dominant architectural bottleneck responsible for throughput degradation.
+
+The inference engine is augmented by a deterministic shadow decoder (`MicrocodeInsightEngine`) that converts model outputs into architecture-inspired telemetry including bottleneck classification, optimization directives, instruction pipeline traces, SHAP-style feature contributions, and hardware visualization diagrams.
+
+The result is a retro terminal-style diagnostic system that explains *why* a workload is slow rather than merely predicting how long it will take.
 
 ## System Architecture
 
 The application is structured as a decoupled full-stack machine learning pipeline:
 
-* **Dual-Model Machine Learning Engine (XGBoost V4)**: A context-aware inference pipeline consisting of an `XGBRegressor` for latency estimation and an `XGBClassifier` for architectural bottleneck classification. Both models operate on a shared 14-dimensional contextual feature vector derived from neighboring instructions and operand-level execution characteristics.
-* **High-Speed Inference API (FastAPI / Python)**: 
-A localized REST API that executes ML predictions in `O(n)` time. It dynamically sanitizes raw assembly text, handles categorical label encoding, and flags unsupported instructions with a [FATAL] diagnostic.
-* **Deterministic Shadow Decoder**: The `MicrocodeInsightEngine` complements ML predictions with architecture-aware telemetry explanations, visualization routing, and optimization directives.
-* **Frontend Dashboard (React / Vite / Tailwind)**:
-A stateless presentation layer that parses telemetry payloads and renders terminal-style diagnostics, color-coded telemetry indicators, instruction traces, and architecture-inspired pipeline visualizations in real time.
+### Dual-Model Machine Learning Engine (XGBoost V5)
 
-## Feature Engineering: The Sliding Window
+A context-aware inference pipeline consisting of:
 
-Traditional profilers analyze code in isolation. This engine parses raw assembly strings into a dimensional feature vector that grants the model contextual awareness of neighboring instructions:
+- `XGBRegressor` for total latency estimation.
+- `XGBClassifier` for dominant bottleneck classification.
 
-* Contextual opcode window (`Prev2`, `Prev1`, `Curr`, `Next1`, `Next2`)
-* Operand encoding (`Op1`, `Op2`)
-* Memory activity flags (`is_mem`, `mem_read`, `mem_write`)
-* Architectural execution flags (`is_branch`, `is_alu`, `has_imm`)
-* Register dependency detection (`reg_dependency`)
+Both models operate on a shared contextual execution representation derived from neighboring instructions and operand-level architectural characteristics.
+
+### High-Speed Inference API (FastAPI / Python)
+
+A localized REST inference server responsible for:
+
+- Assembly parsing and sanitization
+- Sliding-window feature extraction
+- Model inference execution
+- Unsupported opcode validation
+- Fatal diagnostic generation
+
+Inference executes in linear time relative to instruction count.
+
+### Deterministic Shadow Decoder (`MicrocodeInsightEngine`)
+
+The shadow decoder complements ML predictions with architecture-aware reasoning layers:
+
+- Optimization directives
+- SHAP-inspired feature telemetry
+- Hardware visualization routing
+- Bottleneck explanations
+- Architectural narrative generation
+
+This layer transforms numerical predictions into interpretable hardware diagnostics.
+
+### Frontend Dashboard (React + Vite + Tailwind)
+
+A retro terminal-inspired telemetry interface that renders:
+
+- Execution latency estimates
+- Dominant bottleneck instruction isolation
+- Instruction pipeline traces
+- Hardware execution diagrams
+- Optimization directives
+- Feature contribution telemetry
+
+All visualizations are generated dynamically from backend telemetry payloads.
+
+## Feature Engineering: Contextual Sliding Window
+
+Unlike traditional profilers that analyze instructions in isolation, this engine evaluates instructions as contextual execution sequences.
+
+The inference pipeline extracts a contextual feature vector containing:
+
+### Instruction Context
+- Previous instruction (-2)
+- Previous instruction (-1)
+- Current instruction
+- Next instruction (+1)
+- Next instruction (+2)
+
+### Operand Features
+- Operand 1 encoding
+- Operand 2 encoding
+
+### Architectural Flags
+- Memory operand access
+- Memory read
+- Memory write
+- Branch instruction
+- Microcoded arithmetic operation
+- Immediate operand usage
+- Register dependency detection
+
+This contextual representation allows the model to approximate architectural interactions such as:
+
+- Memory bus contention
+- Stack traffic
+- Prefetch invalidation
+- Microcoded execution occupancy
+- Dependency chains
 
 ## Interactive Pipeline Diagnostics
 
 The batch-processing API dynamically scans code blocks and isolates the exact line causing the primary pipeline bottleneck.
 
-1. **Standard Execution (🟢 STANDARD EXECUTION)**: Identifies sequential register-oriented instruction streams that execute efficiently through normal BIU/EU overlap without significant memory pressure or control flow disruption.
+1.🟢 ALU OPTIMAL: Lightweight register-oriented instruction streams execute entirely within the Execution Unit without meaningful contention from memory access, stack traffic, branch penalties, or microcoded operations.
 ```
-MOV AX, 0005H
-MOV BX, 000AH
-ADD AX, BX
-SHL AX, 1
+MOV AX,0001H
+CMP CX,0000H
+JNE START_LOOP
+ADD AX,0002H
 ```
 
-2. **BIU Memory Saturation (🟠 MEMORY BOUND)**: Evaluates memory-oriented instruction streams and identifies workloads dominated by external memory bus transactions.
+2. 🟢 SEQUENTIAL EXECUTION: Sequential register-oriented instruction streams benefit from the 8086 Bus Interface Unit and Execution Unit overlap mechanism, allowing efficient utilization of the processor prefetch queue.
+```
+MOV AX,0001H
+MOV BX,0002H
+ADD AX,BX
+SUB AX,0001H
+```
+
+3. **🟠 MEMORY BOUND**: Memory operands saturate the external bus and stall effective execution throughput while the BIU services memory transactions.
+```
+MOV AX, [BX+SI+10H]
+MOV DX, [BP+DI+20H]
+ADD AX, DX
+```
+
+4. **🔵 STACK ENGINE ACTIVE**: Stack traffic dominates execution through repeated PUSH and POP memory cycles.
 ```
 PUSH AX
 PUSH BX
-MOV CX, [DI]
-POP BX
-POP AX
+POP CX
+POP DX
 ```
 
-3. **The Control Flow Hazard (🔴 CONTROL FLOW HAZARD)**: The sliding window identifies branch-heavy instruction patterns associated with 8086 prefetch queue invalidation and instruction fetch penalties.
+5. **🔴 CONTROL FLOW HAZARD**: The sliding window identifies branch-heavy instruction patterns associated with 8086 prefetch queue invalidation and instruction fetch penalties.
 ```
-MOV AX, 0001H
-CMP CX, 0000H
-JNE START_LOOP
-ADD AX, 0002H
+CMP AX, BX
+JNE LOOP_START
+MOV CX, DX
+ADD AX, CX
 ```
 
-4. **Hardware Profile Violation (🔴 FATAL)**: Detects unsupported instructions, invalid opcodes, or instructions absent from the model's training distribution and rejects them from the latency estimation pipeline.
+6. **🟠 MICROCODED EXECUTION**: Complex arithmetic instructions occupy the execution unit for extended periods through internal microcode sequencing.
+```
+MUL BX
+DIV CX
+```
+
+7. **🔴 FATAL**: Unsupported instructions or instructions absent from the training distribution are dynamically rejected. Supported Instructions: MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, conditional jumps, LEA and basic integer arithmetic. Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.
+   
 ```
 MOV AX, 0001H
 ADD AX, BX
@@ -66,13 +156,14 @@ CPUID
 PUSH AX
 ```
 
+
 ## Limitations & Constraints
 
 To accurately frame the tool's capabilities for engineering environments, it operates under the following constraints:
 
 1. **Heuristic-Based Analysis**: This tool performs block-level latency estimation. It is not a cycle-accurate emulator and does not dynamically track register values, memory contents, interrupt handling, or exact microarchitectural state transitions.
 
-2. **Synthetic Training Distribution**: Predictions are derived from synthetic instruction timing data and deterministic architectural heuristics rather than measurements collected from physical 8086 hardware.
+2. **Synthetic Training Distribution**: Predictions are derived from synthetic execution traces generated from documented 8086 timing characteristics and contextual instruction patterns rather than measurements collected from physical silicon.
    
 3. **Contextual Feature Mapping**: While the model captures the latency impact of branch hazards, memory accesses, and microcoded arithmetic within its sliding window, it does not account for out-of-window dependencies or implementation-specific timing variations across different 8086-compatible systems.
 
