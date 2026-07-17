@@ -161,7 +161,7 @@ CPUID
 PUSH AX
 ```
 
-*Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes*
+*Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes*\
 *`INC` and `DEC` are currently unsupported by the training distribution and are treated as invalid opcodes until included in future model revisions.*
 
 
