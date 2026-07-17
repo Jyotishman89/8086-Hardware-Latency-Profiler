@@ -2,7 +2,7 @@
 
 A performance estimation tool that uses Machine Learning and deterministic heuristics to predict assembly instruction timing based on contextual architectural features.
 
-This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, contextual hotspot analysis and dominant bottleneck opcode isolation, deterministic optimization directives and bottleneck classification through a retro terminal-inspired diagnostic interface built with React.
+This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, contextual hotspot analysis and dominant bottleneck instruction isolation, deterministic optimization directives and bottleneck classification through a retro terminal-inspired diagnostic interface built with React.
 
 ## Overview
 
@@ -31,7 +31,7 @@ Traditional profilers analyze code in isolation. This engine parses raw assembly
 
 ## Interactive Pipeline Diagnostics
 
-The batch-processing API dynamically scans code blocks and isolates the exact line number causing the primary pipeline bottleneck.
+The batch-processing API dynamically scans code blocks and isolates the exact line causing the primary pipeline bottleneck.
 
 1. **Standard Execution (🟢 STANDARD EXECUTION)**: Identifies sequential register-oriented instruction streams that execute efficiently through normal BIU/EU overlap without significant memory pressure or control flow disruption.
 ```
