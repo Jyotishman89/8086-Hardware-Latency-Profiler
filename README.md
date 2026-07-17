@@ -107,7 +107,7 @@ This contextual representation allows the model to approximate architectural int
 
 The batch-processing API dynamically scans code blocks and isolates the exact line causing the primary pipeline bottleneck.
 
-1.🟢 ALU OPTIMAL: Lightweight register-oriented instruction streams execute entirely within the Execution Unit without meaningful contention from memory access, stack traffic, branch penalties, or microcoded operations.
+1. 🟢 ALU OPTIMAL: Lightweight register-oriented instruction streams execute entirely within the Execution Unit without meaningful contention from memory access, stack traffic, branch penalties, or microcoded operations.
 ```
 MOV AX,0001H
 MOV BX,0002H
