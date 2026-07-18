@@ -42,28 +42,28 @@ function App() {
           <span className="text-sm font-bold tracking-widest block text-emerald-400">8086_PROFILER_V4</span>
           <span className="text-xs text-emerald-700 block mt-1">HARDWARE_PROFILER</span>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <svg className="w-10 h-10 text-emerald-500 drop-shadow-[0_0_5px_rgba(16,185,129,0.6)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="square">
             <rect x="5" y="5" width="14" height="14" />
             <rect x="9" y="9" width="6" height="6" />
             <path d="M7 5V2M12 5V2M17 5V2M7 19v3M12 19v3M17 19v3M5 7H2M5 12H2M5 17H2M19 7h3M19 12h3M19 17h3" />
           </svg>
-          
+
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        
+
         <div className="lg:col-span-4 flex flex-col">
           <div className="text-xs text-emerald-800 mb-1">&gt;_ASSEMBLY_INPUT</div>
-          <textarea 
+          <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
             className="w-full h-80 bg-black border-2 border-emerald-900 p-2 text-emerald-400 focus:outline-none focus:border-emerald-500 resize-none"
             spellCheck="false"
           />
-          <button 
+          <button
             onClick={runAnalysis}
             disabled={loading}
             className="w-full mt-2 bg-emerald-900 text-black font-bold p-2 hover:bg-emerald-500 transition-all disabled:opacity-50"
@@ -73,7 +73,7 @@ function App() {
         </div>
 
         <div className="lg:col-span-8 flex flex-col gap-4">
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="border-2 border-emerald-900 p-4">
               <div className="text-[10px] text-emerald-800 mb-2">TOTAL_PREDICTED_T-STATES</div>
@@ -81,9 +81,8 @@ function App() {
             </div>
             <div className="border-2 border-emerald-900 p-4">
               <div className="text-[10px] text-emerald-800 mb-2">PRIMARY_BOTTLENECK</div>
-              <div className={`text-xl uppercase font-bold ${
-                telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500" : "text-emerald-400"
-              }`}>
+              <div className={`text-xl uppercase font-bold ${telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500" : "text-emerald-400"
+                }`}>
                 {bottleneckInstruction}
               </div>
             </div>
@@ -95,14 +94,14 @@ function App() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {results.shap_importances.map((shapStr, idx) => {
                   const parts = shapStr.split(' from ');
-                  
+
                   const numericValue = parseFloat(parts[0].replace('+', '').replace('T', ''));
-                  
-                  let colorClass = "text-emerald-500"; 
+
+                  let colorClass = "text-emerald-500";
                   if (numericValue > 10) {
-                    colorClass = "text-red-500";       
+                    colorClass = "text-red-500";
                   } else if (numericValue >= 5) {
-                    colorClass = "text-amber-500";  
+                    colorClass = "text-amber-500";
                   }
 
                   return (
@@ -120,32 +119,40 @@ function App() {
             <div className="border-2 border-emerald-900 p-4 bg-emerald-950/20">
               <div className="flex items-center gap-3 mb-3 border-b border-emerald-900/50 pb-2">
                 <div className="text-[10px] text-emerald-800">OPTIMIZATION_DIRECTIVE</div>
-                <div className={`text-[10px] font-bold px-2 py-0.5 border ${
-                  telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500 bg-red-950/30 border-red-900/50" : 
-                  (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS") || telemetryTag.includes("MICROCODED")) ? "text-amber-500 bg-amber-950/30 border-amber-900/50" : 
-                  telemetryTag.includes("STACK") ? "text-indigo-400 bg-indigo-950/30 border-indigo-900/50" :
-                  "text-emerald-500 bg-emerald-950/30 border-emerald-900/50"
-                }`}>
+                <div className={`text-[10px] font-bold px-2 py-0.5 border ${telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500 bg-red-950/30 border-red-900/50" :
+                    (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS") || telemetryTag.includes("MICROCODED")) ? "text-amber-500 bg-amber-950/30 border-amber-900/50" :
+                      telemetryTag.includes("STACK") ? "text-indigo-400 bg-indigo-950/30 border-indigo-900/50" :
+                        "text-emerald-500 bg-emerald-950/30 border-emerald-900/50"
+                  }`}>
                   [{telemetryTag}]
                 </div>
               </div>
               <div className="text-sm text-emerald-300 leading-relaxed">
-                {results.insight}
+                {results.insight.startsWith("CRITICAL FAULT:") ? (
+                  <>
+                    <span className="text-red-500 font-bold">
+                      CRITICAL FAULT:
+                    </span>
+                    {results.insight.replace("CRITICAL FAULT:", "")}
+                  </>
+                ) : (
+                  results.insight
+                )}
               </div>
 
               {telemetryTag.includes("FATAL") && (
                 <div className="border border-red-900/30 p-2 bg-black mt-4">
                   <div className="text-[8px] text-red-800 mb-2 tracking-widest">SYSTEM_INTERRUPT_CONTROLLER (EXCEPTION)</div>
                   <svg className="w-full h-12" viewBox="0 0 450 40" fill="none" stroke="currentColor">
-                    <rect x="10" y="10" width="100" height="20" className="stroke-red-900 fill-red-950/30" />
-                    <text x="60" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">ILLEGAL_OP</text>
-                    <rect x="160" y="10" width="60" height="20" className="stroke-red-600 fill-red-950/50" strokeWidth="2"/>
-                    <text x="190" y="24" className="fill-red-400 text-[10px] font-bold" textAnchor="middle" stroke="none">INT 6</text>
-                    <rect x="270" y="10" width="170" height="20" className="stroke-red-900 fill-red-950/30" />
-                    <text x="355" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">MODEL COVERAGE FAILURE</text>
-                    <path d="M 110 20 L 160 20 M 220 20 L 270 20" className="stroke-red-600" strokeWidth="2" strokeDasharray="6 4" />
-                    <circle cx="135" cy="20" r="6" className="fill-red-900 stroke-red-500" strokeWidth="1" />
-                    <text x="135" y="23" className="fill-black text-[10px] font-bold" textAnchor="middle" stroke="none">!</text>
+                    <rect x="10" y="10" width="110" height="20" className="stroke-red-900 fill-red-950/30" />
+                    <text x="65" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">UNSUPPORTED_OP</text>
+                    <rect x="170" y="10" width="130" height="20" className="stroke-red-600 fill-red-950/50" strokeWidth="2" />
+                    <text x="235" y="24" className="fill-red-400 text-[10px] font-bold" textAnchor="middle" stroke="none">INFERENCE REJECT</text>
+                    <rect x="350" y="10" width="140" height="20" className="stroke-red-900 fill-red-950/30" />
+                    <text x="420" y="24" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">MODEL COVERAGE FAILURE</text>
+                    <path d="M 120 20 L 170 20 M 300 20 L 350 20" className="stroke-red-600" strokeWidth="2" strokeDasharray="6 4" />
+                    <circle cx="145" cy="20" r="6" className="fill-red-900 stroke-red-500" strokeWidth="1" />
+                    <text x="145" y="23" className="fill-black text-[10px] font-bold" textAnchor="middle" stroke="none">!</text>
                   </svg>
                 </div>
               )}
@@ -154,9 +161,9 @@ function App() {
                 <div className="border border-emerald-900/30 p-2 bg-black mt-4">
                   <div className="text-[8px] text-emerald-800 mb-2 tracking-widest">NATIVE_SCALAR_EXECUTION (BIU/EU_OVERLAP)</div>
                   <svg className="w-full h-12" viewBox="0 0 450 40" fill="none" stroke="currentColor">
-                    <rect x="10" y="10" width="80" height="20" className="stroke-emerald-900 fill-emerald-950/30" strokeDasharray="4 2"/>
+                    <rect x="10" y="10" width="80" height="20" className="stroke-emerald-900 fill-emerald-950/30" strokeDasharray="4 2" />
                     <text x="50" y="24" className="fill-emerald-700 text-[10px]" textAnchor="middle" stroke="none">BIU PREFETCH</text>
-                    
+
                     <rect x="115" y="10" width="90" height="20" className="stroke-emerald-700 fill-black" />
                     <line x1="130" y1="10" x2="130" y2="30" className="stroke-emerald-900" />
                     <line x1="145" y1="10" x2="145" y2="30" className="stroke-emerald-900" />
@@ -167,10 +174,10 @@ function App() {
 
                     <rect x="230" y="10" width="70" height="20" className="stroke-emerald-600 fill-emerald-950/30" />
                     <text x="265" y="24" className="fill-emerald-500 text-[10px]" textAnchor="middle" stroke="none">DECODE</text>
-                    
-                    <rect x="325" y="10" width="115" height="20" className="stroke-emerald-500 fill-emerald-950/50" strokeWidth="2"/>
+
+                    <rect x="325" y="10" width="115" height="20" className="stroke-emerald-500 fill-emerald-950/50" strokeWidth="2" />
                     <text x="382.5" y="24" className="fill-emerald-400 text-[10px] font-bold" textAnchor="middle" stroke="none">EU EXECUTE</text>
-                    
+
                     <path d="M 90 20 L 115 20 M 205 20 L 230 20 M 300 20 L 325 20" className="stroke-emerald-800" strokeWidth="2" />
                   </svg>
                 </div>
@@ -182,18 +189,18 @@ function App() {
                   <svg className="w-full h-14" viewBox="0 0 450 50" fill="none" stroke="currentColor">
                     <rect x="20" y="10" width="70" height="20" className="stroke-emerald-900 fill-emerald-950/30" />
                     <text x="55" y="24" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">REGISTERS</text>
-                    
+
                     <rect x="120" y="10" width="100" height="20" className="stroke-amber-600 fill-amber-950/30" strokeWidth="2" />
                     <text x="170" y="24" className="fill-amber-500 text-[10px] font-bold" textAnchor="middle" stroke="none">MICROCODE ROM</text>
-                    
+
                     <rect x="250" y="10" width="80" height="20" className="stroke-amber-600 fill-amber-950/30" strokeWidth="2" />
                     <text x="290" y="24" className="fill-amber-500 text-[10px] font-bold" textAnchor="middle" stroke="none">EXECUTION</text>
-                    
+
                     <rect x="360" y="10" width="60" height="20" className="stroke-emerald-900 fill-emerald-950/30" />
                     <text x="390" y="24" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">WRITE</text>
-                    
+
                     <path d="M 90 20 L 120 20 M 220 20 L 250 20 M 330 20 L 360 20" className="stroke-amber-700" strokeWidth="2" />
-                    
+
                     <path d="M 290 30 L 290 40 L 170 40 L 170 31" className="stroke-amber-500" strokeWidth="1.5" strokeDasharray="3 2" fill="none" />
                     <polygon points="167,34 170,30 173,34" className="fill-amber-500 stroke-none" />
                     <text x="230" y="48" className="fill-amber-500 text-[7px] tracking-widest font-bold" textAnchor="middle" stroke="none">MULTI-CYCLE FEEDBACK</text>
@@ -201,24 +208,24 @@ function App() {
                 </div>
               )}
 
-             {telemetryTag.includes("HAZARD") && (
+              {telemetryTag.includes("HAZARD") && (
                 <div className="border border-red-900/30 p-2 bg-black mt-4">
                   <div className="text-[8px] text-red-800 mb-2 tracking-widest">PIPELINE_PREFETCH_QUEUE (6-BYTE)</div>
                   <svg className="w-full h-14" viewBox="0 0 450 50" fill="none" stroke="currentColor">
                     <text x="100" y="10" className="fill-red-500 text-[8px] font-bold tracking-widest" textAnchor="middle" stroke="none">6-BYTE QUEUE INVALIDATED</text>
-                    
+
                     <rect x="10" y="15" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
                     <text x="50" y="29" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
-                    
+
                     <rect x="105" y="15" width="80" height="20" className="stroke-emerald-900" strokeDasharray="4 2" />
                     <text x="145" y="29" className="fill-emerald-900 text-[10px]" textAnchor="middle" stroke="none">FLUSHED</text>
-                    
+
                     <rect x="200" y="15" width="125" height="20" className="stroke-red-900 fill-red-950/30" strokeWidth="2" />
                     <text x="262.5" y="29" className="fill-red-500 text-[10px] font-bold" textAnchor="middle" stroke="none">PREFETCH REFILL</text>
-                    
+
                     <rect x="340" y="15" width="80" height="20" className="stroke-emerald-500" strokeWidth="2" />
                     <text x="380" y="29" className="fill-emerald-500 text-[10px] font-bold" textAnchor="middle" stroke="none">NEW FETCH</text>
-                    
+
                     <path d="M 90 25 L 105 25 M 185 25 L 200 25 M 325 25 L 340 25" className="stroke-emerald-800" strokeWidth="2" />
                   </svg>
                 </div>
@@ -230,13 +237,13 @@ function App() {
                   <svg className="w-full h-12" viewBox="0 0 450 40" fill="none" stroke="currentColor">
                     <rect x="50" y="10" width="90" height="20" className="stroke-indigo-600 fill-indigo-950/30" />
                     <text x="95" y="24" className="fill-indigo-500 text-[10px] font-bold" textAnchor="middle" stroke="none">SP REG (±2)</text>
-                    
-                    <rect x="200" y="10" width="50" height="20" className="stroke-indigo-800 fill-indigo-950/30" strokeDasharray="2 2"/>
+
+                    <rect x="200" y="10" width="50" height="20" className="stroke-indigo-800 fill-indigo-950/30" strokeDasharray="2 2" />
                     <text x="225" y="24" className="fill-indigo-600 text-[10px]" textAnchor="middle" stroke="none">BIU</text>
-                    
-                    <rect x="310" y="10" width="90" height="20" className="stroke-indigo-500 fill-indigo-950/50" strokeWidth="2"/>
+
+                    <rect x="310" y="10" width="90" height="20" className="stroke-indigo-500 fill-indigo-950/50" strokeWidth="2" />
                     <text x="355" y="24" className="fill-indigo-400 text-[10px] font-bold" textAnchor="middle" stroke="none">LIFO STACK</text>
-                    
+
                     <path d="M 140 16 L 200 16 M 250 16 L 310 16" className="stroke-indigo-600" strokeWidth="2" />
                     <path d="M 200 24 L 140 24 M 310 24 L 250 24" className="stroke-indigo-600" strokeWidth="2" strokeDasharray="2 2" />
                   </svg>
@@ -280,11 +287,11 @@ function App() {
               )}
             </div>
 
-            
 
-            
+
+
           )}
-            
+
           <div className="border-2 border-emerald-900 flex-grow">
             <div className="bg-emerald-900 text-black px-2 py-1 text-xs font-bold">INSTRUCTION_PIPELINE_TRACE</div>
             <div className="p-2 text-xs grid grid-cols-12 gap-2 text-emerald-700 border-b border-emerald-950 mb-2">
