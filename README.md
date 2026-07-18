@@ -164,7 +164,6 @@ PUSH AX
 * *Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.*
 * *`INC` and `DEC` are currently unsupported by the training distribution and are treated as invalid opcodes until included in future model revisions.*
 
-
 ## Limitations & Constraints
 
 To accurately frame the tool's capabilities for engineering environments, it operates under the following constraints:
@@ -175,8 +174,8 @@ To accurately frame the tool's capabilities for engineering environments, it ope
    
 3. **Contextual Feature Mapping**: While the model captures the latency impact of branch hazards, memory accesses, and microcoded arithmetic within its sliding window, it does not account for out-of-window dependencies or implementation-specific timing variations across different 8086-compatible systems.
 
-4. **Instruction Scope**: Focused strictly on standard 8086 integer instruction sets. Modern AVX instructions, unsupported opcodes, or instructions outside the supported ISA are dynamically caught and flagged with a [FATAL] diagnostic and excluded from latency estimation.
-   
+4. **Instruction Scope**: Focused on the supported subset of standard 8086 integer instructions represented within the profiler's inference distribution. Unsupported opcodes are dynamically caught and flagged with a [FATAL] diagnostic. The current parser performs opcode-level validation but does not enforce strict operand-level ISA validation for every possible instruction and operand combination.
+
 ## Local Development Setup
 
 1. Clone the repository
