@@ -93,7 +93,7 @@ function App() {
 
           {results && results.shap_importances && results.shap_importances.length > 0 && (
             <div className="border-2 border-emerald-900 p-4 bg-black">
-              <div className="text-[10px] text-emerald-800 mb-2 tracking-widest">MODEL_FEATURE_CONTRIBUTIONS</div>
+              <div className="text-[10px] text-emerald-800 mb-2 tracking-widest">LATENCY_CONTRIBUTORS</div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {results.shap_importances.map((shapStr, idx) => {
                   const parts = shapStr.split(' from ');
