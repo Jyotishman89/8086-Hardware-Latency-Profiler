@@ -107,7 +107,7 @@ This contextual representation allows the model to approximate architectural int
 
 The batch-processing API dynamically scans code blocks and isolates the exact line causing the primary pipeline bottleneck.
 
-1.🟢 ALU OPTIMAL: Lightweight register-oriented instruction streams execute entirely within the Execution Unit without meaningful contention from memory access, stack traffic, branch penalties, or microcoded operations.
+1. 🟢 ALU OPTIMAL: Lightweight register-oriented instruction streams execute entirely within the Execution Unit without meaningful contention from memory access, stack traffic, branch penalties, or microcoded operations.
 ```
 MOV AX,0001H
 MOV BX,0002H
@@ -152,8 +152,7 @@ MUL BX
 DIV CX
 ```
 
-7. **🔴 FATAL**: Unsupported instructions or instructions absent from the training distribution are dynamically rejected. Supported instructions currently include MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, LEA, and common conditional branch instructions used during training. Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.
-   
+7. **🔴 FATAL**: Unsupported instructions or instructions absent from the training distribution are dynamically rejected.   
 ```
 MOV AX, 0001H
 ADD AX, BX
@@ -161,8 +160,9 @@ CPUID
 PUSH AX
 ```
 
-*Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.*\
-*`INC` and `DEC` are currently unsupported by the training distribution and are treated as invalid opcodes until included in future model revisions.*
+* *Supported instructions currently include MOV, ADD, SUB, MUL, DIV, CMP, PUSH, POP, LEA, and common conditional branch instructions used during training.*
+* *Shift/rotate instructions are currently outside the supported inference distribution and are treated as unsupported opcodes.*
+* *`INC` and `DEC` are currently unsupported by the training distribution and are treated as invalid opcodes until included in future model revisions.*
 
 
 ## Limitations & Constraints
