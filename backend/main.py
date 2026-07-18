@@ -158,26 +158,6 @@ async def predict_block(request: AssemblyRequest):
     insight_text = "Standard execution pipeline."
     
     if bottleneck_feature_vector is not None:
-        shap_values = explainer.shap_values(bottleneck_feature_vector)
-        feature_contributions = list(zip(feature_cols, shap_values[0]))
-        feature_contributions.sort(key=lambda x: x[1], reverse=True)
-
-        feature_name_map = {
-            "is_alu": "MICROCODED_ARITHMETIC",
-            "curr_op": "CURRENT_OPCODE",
-            "is_mem": "MEMORY_OPERAND_ACCESS",
-            "mem_read": "BUS_READ_CYCLE",
-            "mem_write": "BUS_WRITE_CYCLE",
-            "is_branch": "PIPELINE_BRANCH",
-            "has_imm": "IMMEDIATE_FETCH",
-            "reg_dependency": "REGISTER_DEPENDENCY"
-        }
-        
-        for feat, val in feature_contributions[:3]:
-            if val > 0.5:
-                clean_feat_name = feature_name_map.get(feat, feat.replace('_', ' ').upper())
-                shap_results.append(f"+{val:.1f}T from {clean_feat_name}")
-
         bottleneck_op = bottleneck_instruction_text.split()[0]
                 
         if max_latency > 80.0:
@@ -190,7 +170,7 @@ async def predict_block(request: AssemblyRequest):
             bottleneck_diagnostic = "SEQUENTIAL_EXECUTION"
 
         feature_name_map = {
-            "is_alu": "MICROCODED_ARITHMETIC",
+            "is_alu": "ALU_OPERATION",
             "curr_op": "CURRENT_OPCODE",
             "is_mem": "STACK_TRAFFIC" if bottleneck_diagnostic == "STACK_ENGINE_ACTIVE" else "MEMORY_OPERAND_ACCESS",
             "mem_read": "BUS_READ_CYCLE",
@@ -199,19 +179,15 @@ async def predict_block(request: AssemblyRequest):
             "has_imm": "IMMEDIATE_FETCH",
             "reg_dependency": "REGISTER_DEPENDENCY"
         }
-
-        shap_results = []
-        insight_text = "Standard execution pipeline."
         
-        if bottleneck_feature_vector is not None:
-            shap_values = explainer.shap_values(bottleneck_feature_vector)
-            feature_contributions = list(zip(feature_cols, shap_values[0]))
-            feature_contributions.sort(key=lambda x: x[1], reverse=True)
-            
-            for feat, val in feature_contributions[:3]:
-                if val > 0.5:
-                    clean_feat_name = feature_name_map.get(feat, feat.replace('_', ' ').upper())
-                    shap_results.append(f"+{val:.1f}T from {clean_feat_name}")
+        shap_values = explainer.shap_values(bottleneck_feature_vector)
+        feature_contributions = list(zip(feature_cols, shap_values[0]))
+        feature_contributions.sort(key=lambda x: x[1], reverse=True)
+        
+        for feat, val in feature_contributions[:3]:
+            if val > 0.5:
+                clean_feat_name = feature_name_map.get(feat, feat.replace('_', ' ').upper())
+                shap_results.append(f"+{val:.1f}T from {clean_feat_name}")
 
         if bottleneck_diagnostic == "CONTROL_FLOW_HAZARD":
             insight_text = "Taken branch invalidates the 6-byte prefetch queue."
