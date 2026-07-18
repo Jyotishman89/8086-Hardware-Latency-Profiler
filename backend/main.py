@@ -33,8 +33,12 @@ except Exception as e:
 class AssemblyRequest(BaseModel):
     instructions: list[str]
 
+SUPPORTED_ALU_OPS = {"ADD", "SUB", "MUL", "DIV", "XOR", "AND", "OR"}
+SUPPORTED_BRANCH_OPS = {"JMP", "JNE", "JZ", "CALL", "RET"}
+NO_MEM_WRITE_OPS = {"PUSH", "MUL", "DIV", "CMP", "TEST"}
+MEM_READ_EXCEPTIONS = {"PUSH", "MUL", "DIV"}
+
 def parse_instruction(line):
-    """Translates raw text into architectural heuristic flags."""
     parts = re.split(r'[\s,]+', line.strip().upper())
     parts = [p for p in parts if p]
     
@@ -42,19 +46,13 @@ def parse_instruction(line):
     op1 = parts[1] if len(parts) > 1 else ""
     op2 = parts[2] if len(parts) > 2 else ""
 
-    SUPPORTED_ALU_OPS = {
-    "ADD","SUB","MUL","DIV",
-    "XOR","AND","OR"
-}
-
     is_alu = int(opcode in SUPPORTED_ALU_OPS)
+    is_branch = int(opcode in SUPPORTED_BRANCH_OPS)
     
-    #is_alu = 1 if opcode in ["ADD", "SUB", "INC", "DEC", "MUL", "DIV", "XOR", "AND", "OR", "SHL", "SHR"] else 0
-    is_branch = 1 if opcode in ["JMP", "JNE", "JZ", "CALL", "RET"] else 0
     is_mem = 1 if opcode in ["PUSH", "POP"] or (("[" in op1 or "[" in op2) and opcode != "LEA") else 0
     
-    mem_read = 1 if ("[" in op2 and opcode not in ["LEA"]) or ("[" in op1 and opcode in ["PUSH", "MUL", "DIV"]) else 0
-    mem_write = 1 if "[" in op1 and opcode not in ["PUSH", "MUL", "DIV", "CMP", "TEST"] else 0
+    mem_read = 1 if ("[" in op2 and opcode != "LEA") or ("[" in op1 and opcode in MEM_READ_EXCEPTIONS) else 0
+    mem_write = 1 if "[" in op1 and opcode not in NO_MEM_WRITE_OPS else 0
     has_imm = 1 if "H" in op2 or op2.isdigit() else 0
     
     return {
@@ -64,7 +62,6 @@ def parse_instruction(line):
     }
 
 def safe_encode(col, val):
-    """Prevents the API from crashing if the user types an unseen register/label."""
     try:
         return encoders[col].transform([val])[0]
     except ValueError:
