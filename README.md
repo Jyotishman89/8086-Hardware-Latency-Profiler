@@ -2,7 +2,7 @@
 
 A performance estimation tool that uses Machine Learning and deterministic heuristics to predict assembly instruction timing based on contextual architectural features.
 
-This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, contextual hotspot analysis and dominant bottleneck instruction isolation, deterministic optimization directives and bottleneck classification through a retro terminal-inspired diagnostic interface built with React.
+This project bridges low-level computer architecture with modern AI pipelines, providing real-time execution metrics, contextual hotspot analysis and dominant bottleneck assembly instruction isolation, deterministic optimization directives and bottleneck classification through a retro terminal-inspired diagnostic interface built with React.
 
 ## Overview
 
