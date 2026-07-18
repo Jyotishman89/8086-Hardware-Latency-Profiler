@@ -77,7 +77,10 @@ function App() {
           <div className="grid grid-cols-2 gap-4">
             <div className="border-2 border-emerald-900 p-4">
               <div className="text-[10px] text-emerald-800 mb-2">TOTAL_PREDICTED_T-STATES</div>
-              <div className="text-4xl">{results ? results.total_t_states : "0000"}</div>
+              <div className={`text-4xl ${results?.total_t_states === "ERR" ? "text-red-500" : "text-emerald-500"
+                }`}>
+                {results ? results.total_t_states : "0000"}
+              </div>
             </div>
             <div className="border-2 border-emerald-900 p-4">
               <div className="text-[10px] text-emerald-800 mb-2">PRIMARY_BOTTLENECK</div>
@@ -120,9 +123,9 @@ function App() {
               <div className="flex items-center gap-3 mb-3 border-b border-emerald-900/50 pb-2">
                 <div className="text-[10px] text-emerald-800">OPTIMIZATION_DIRECTIVE</div>
                 <div className={`text-[10px] font-bold px-2 py-0.5 border ${telemetryTag.includes("FATAL") || telemetryTag.includes("HAZARD") ? "text-red-500 bg-red-950/30 border-red-900/50" :
-                    (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS") || telemetryTag.includes("MICROCODED")) ? "text-amber-500 bg-amber-950/30 border-amber-900/50" :
-                      telemetryTag.includes("STACK") ? "text-indigo-400 bg-indigo-950/30 border-indigo-900/50" :
-                        "text-emerald-500 bg-emerald-950/30 border-emerald-900/50"
+                  (telemetryTag.includes("MEMORY") || telemetryTag.includes("BUS") || telemetryTag.includes("MICROCODED")) ? "text-amber-500 bg-amber-950/30 border-amber-900/50" :
+                    telemetryTag.includes("STACK") ? "text-indigo-400 bg-indigo-950/30 border-indigo-900/50" :
+                      "text-emerald-500 bg-emerald-950/30 border-emerald-900/50"
                   }`}>
                   [{telemetryTag}]
                 </div>
